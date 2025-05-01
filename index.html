@@ -3,58 +3,100 @@
 <head>
     <title>Housing Projects</title>
     <style>
+        /* Minimalist Login Styles */
+        .login-container {
+            max-width: 350px;
+            margin: 100px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .login-container h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .login-input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .login-btn:hover {
+            background-color: #45a049;
+        }
+        .error-message {
+            color: #f44336;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        /* Search Button Styles */
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .search-btn {
+            padding: 8px 15px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Admin Controls */
+        .admin-controls {
+            background-color: #e7f3fe;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            border-left: 5px solid #2196F3;
+        }
+
+        /* Rest of your existing styles... */
         body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .login-box, .admin-only { background: #f0f0f0; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #4CAF50; color: white; position: relative; cursor: move; }
+        th { background-color: #4CAF50; color: white; position: relative; }
         button { padding: 5px 10px; margin: 2px; cursor: pointer; }
         .hidden { display: none; }
-        input[type="text"], input[type="number"], input[type="checkbox"], select { padding: 5px; width: 100%; box-sizing: border-box; }
-        .search-box { margin: 10px 0; padding: 8px; width: 300px; }
-        .remove-col { position: absolute; right: 2px; top: 2px; font-size: 12px; cursor: pointer; }
-        .status-sold { background-color: #ffdddd; }
-        .status-with-folder { background-color: #fff3cd; }
-        .hidden-from-user { opacity: 0.7; background-color: #f8f9fa; }
-        .status-controls { display: flex; gap: 10px; margin-top: 10px; }
-        .checkbox-label { display: flex; align-items: center; gap: 5px; }
-        .filter-controls { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; }
-        .calculator { background: #e6f7ff; padding: 15px; border-radius: 5px; margin: 20px 0; }
-        .calculator h3 { margin-top: 0; }
-        .calculator-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .calculator-results { margin-top: 15px; background: #f8f9fa; padding: 15px; border-radius: 5px; }
         .tabs { display: flex; margin-bottom: 15px; }
         .tab { padding: 10px 15px; cursor: pointer; background: #e0e0e0; border-radius: 5px 5px 0 0; margin-right: 5px; }
         .tab.active { background: #4CAF50; color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .column-edit { position: absolute; right: 20px; top: 2px; font-size: 12px; cursor: pointer; }
-        .dragging { opacity: 0.5; }
         .currency-input { position: relative; }
         .currency-input::before { content: "₱"; position: absolute; left: 5px; top: 5px; }
         .currency-input input { padding-left: 20px !important; }
         .bulletin { background-color: #fff8e1; padding: 20px; border-radius: 10px; margin: 20px 0; text-align: center; border: 2px solid #ffc107; }
-        .bulletin-title { font-size: 24px; font-weight: bold; color: #ff6f00; margin-bottom: 10px; }
-        .bulletin-date { font-size: 28px; font-weight: bold; margin: 10px 0; }
-        .bulletin-day { font-size: 20px; color: #ff6f00; margin-bottom: 15px; }
-        .bulletin-agent { font-size: 18px; font-weight: bold; margin: 10px 0; }
-        .bulletin-unit { font-size: 16px; margin: 5px 0; }
-        .bulletin-congrats { font-size: 20px; font-weight: bold; color: #ff6f00; margin-top: 15px; }
-        .emoji { font-size: 20px; }
         .sales-report { background-color: #e8f5e9; padding: 15px; border-radius: 5px; margin: 20px 0; }
-        .sales-report-title { font-size: 20px; font-weight: bold; text-align: center; margin-bottom: 15px; color: #2e7d32; }
-        .current-date { font-weight: bold; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-<!-- Login Section -->
+<!-- Minimalist Login Section -->
 <div id="login-section">
-    <h2>Login</h2>
-    <div class="login-box">
-        <p>Username: <input type="text" id="username"></p>
-        <p>Password: <input type="password" id="password"></p>
-        <button onclick="login()">Login</button>
+    <div class="login-container">
+        <h2>Login</h2>
+        <div id="login-error" class="error-message hidden"></div>
+        <input type="text" id="username" class="login-input" placeholder="Username">
+        <input type="password" id="password" class="login-input" placeholder="Password">
+        <button onclick="login()" class="login-btn">Login</button>
     </div>
 </div>
 
@@ -66,20 +108,71 @@
     
     <!-- Tabs -->
     <div class="tabs">
-        <div class="tab active" onclick="switchTab('projects-tab')">Projects</div>
+        <div class="tab active" onclick="switchTab('projects-tab')">Inventory</div>
         <div class="tab" onclick="switchTab('calculator-tab')">Loan Calculator</div>
         <div class="tab" onclick="switchTab('bulletin-tab')">Sold Units</div>
-        <div class="tab" onclick="switchTab('sales-tab')">Sales Report</div>
+        <div id="sales-tab-btn" class="tab" onclick="switchTab('sales-tab')">Sales Report</div>
     </div>
     
     <!-- Projects Tab -->
     <div id="projects-tab" class="tab-content active">
-        <!-- ... (existing projects tab content) ... -->
+        <!-- Search Container -->
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-box" placeholder="Search inventory...">
+            <button onclick="searchProjects()" class="search-btn">Search</button>
+        </div>
+        
+        <!-- Admin Controls -->
+        <div id="admin-controls" class="admin-controls admin-only">
+            <button onclick="showAddForm()">Add New Project</button>
+            <button onclick="addCustomColumn()">Add Column</button>
+            <button onclick="saveData()">Save All Data</button>
+            <button onclick="showColumnManager()">Manage Columns</button>
+        </div>
+        
+        <!-- Projects Table -->
+        <table id="projects-table">
+            <thead>
+                <tr id="table-header">
+                    <!-- Dynamic headers will be added here -->
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
     
     <!-- Calculator Tab -->
     <div id="calculator-tab" class="tab-content">
-        <!-- ... (existing calculator tab content) ... -->
+        <div class="calculator">
+            <h3>Loan Calculator</h3>
+            <div class="calculator-grid">
+                <div class="currency-input">
+                    <label>Loan Amount:</label>
+                    <input type="text" id="loan-amount" placeholder="Enter loan amount" oninput="formatCurrency(this)">
+                </div>
+                <div>
+                    <label>Interest Rate (%):</label>
+                    <input type="number" id="interest-rate" placeholder="Enter interest rate" step="0.01">
+                </div>
+                <div>
+                    <label>Loan Term (years):</label>
+                    <input type="number" id="loan-term" placeholder="Enter loan term">
+                </div>
+                <div>
+                    <label>Income Requirement (% of amortization):</label>
+                    <input type="number" id="income-percent" placeholder="30" value="30">
+                </div>
+            </div>
+            <button onclick="calculateLoan()" style="margin-top: 10px;">Calculate</button>
+            
+            <div id="calculator-results" class="calculator-results hidden">
+                <h4>Calculation Results</h4>
+                <p>Monthly Amortization: <span id="monthly-amortization"></span></p>
+                <p>Total Interest: <span id="total-interest"></span></p>
+                <p>Total Payment: <span id="total-payment"></span></p>
+                <p>Required Monthly Income: <span id="required-income"></span></p>
+            </div>
+        </div>
     </div>
     
     <!-- Sold Units Bulletin Tab -->
@@ -88,7 +181,7 @@
             <!-- Bulletin will be generated here -->
         </div>
         
-        <div id="bulletin-form" class="admin-only" style="margin-top: 30px;">
+        <div id="bulletin-form" class="admin-controls admin-only" style="margin-top: 30px;">
             <h3>Add Sold Unit</h3>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <div>
@@ -151,7 +244,7 @@
                 </tbody>
             </table>
             
-            <div id="sales-form" class="admin-only" style="margin-top: 20px;">
+            <div id="sales-form" class="admin-controls admin-only" style="margin-top: 20px;">
                 <h3>Add/Edit Sales Data</h3>
                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
                     <div>
@@ -176,274 +269,211 @@
 </div>
 
 <script>
-// ... (previous JavaScript code remains the same until initApp function) ...
+// Simple credentials
+const ADMIN = {
+    username: "admin",
+    password: "DecaHomesIloiloUm6"
+};
+
+// Default columns
+const DEFAULT_COLUMNS = [
+    { id: "name", title: "Project Name", type: "text" },
+    { id: "phase", title: "Phase/Site", type: "text" },
+    { id: "block", title: "Block", type: "text" },
+    { id: "lot", title: "Lot", type: "text" },
+    { id: "price", title: "Price", type: "currency" },
+    { id: "reservation_fee", title: "Reservation Fee", type: "currency" },
+    { id: "equity", title: "Equity", type: "currency" },
+    { id: "monthly", title: "Monthly Amortization", type: "currency" },
+    { id: "status", title: "Status", type: "text" }
+];
+
+// Sample initial data
+const SAMPLE_DATA = [
+    {
+        name: "DHPRR1",
+        phase: "Phase 1",
+        block: "A",
+        lot: "15",
+        price: "1500000",
+        reservation_fee: "10000",
+        equity: "300000",
+        monthly: "15000",
+        status: "available",
+        hidden_from_user: false
+    }
+];
+
+// Initialize application
+let columns = [];
+let projects = [];
+let bulletinEntries = [];
+let salesData = [];
+
+// Check if logged in on page load
+if(localStorage.getItem("loggedIn")) {
+    initApp(localStorage.getItem("userRole"));
+}
 
 function initApp(role) {
-    // Load columns from storage or use defaults
+    // Load data from storage or use defaults
     columns = JSON.parse(localStorage.getItem("columns")) || DEFAULT_COLUMNS;
-    
-    // Load projects from storage or use sample data
     projects = JSON.parse(localStorage.getItem("projects")) || SAMPLE_DATA;
-    
-    // Load bulletin entries
     bulletinEntries = JSON.parse(localStorage.getItem("bulletinEntries")) || [];
-    
-    // Load sales data
     salesData = JSON.parse(localStorage.getItem("salesData")) || [];
     
     showContent(role);
     renderTableHeader();
     renderFormFields();
     updateProjectFilter();
-    setupColumnDragAndDrop();
     renderBulletin();
     renderSalesReport();
-}
-
-// ... (keep all existing functions until the end, then add these new ones) ...
-
-// Bulletin functionality
-let bulletinEntries = [];
-
-function renderBulletin() {
-    const container = document.getElementById("bulletin-container");
-    container.innerHTML = "";
     
-    // Get today's entries
-    const today = new Date().toISOString().split('T')[0];
-    const todayEntries = bulletinEntries.filter(entry => entry.date === today);
-    
-    if(todayEntries.length === 0) {
-        container.innerHTML = "<p>No units sold today</p>";
-        return;
-    }
-    
-    // For demo, show the most recent entry
-    const latestEntry = todayEntries[todayEntries.length - 1];
-    
-    // Format the date
-    const dateParts = latestEntry.date.split('-');
-    const month = dateParts[1];
-    const day = dateParts[2];
-    const year = dateParts[0];
-    
-    // Get day name
-    const dateObj = new Date(latestEntry.date);
-    const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
-    
-    // Create bulletin
-    const bulletin = document.createElement("div");
-    bulletin.className = "bulletin";
-    bulletin.innerHTML = `
-        <div class="bulletin-title"><span class="emoji">✨</span>RESERVATION OF THE DAY!<span class="emoji">✨</span></div>
-        <div class="bulletin-date">
-            ${month.split('').map(n => `&#${parseInt(n) + 0x245F};`).join('')}-${day.split('').map(n => `&#${parseInt(n) + 0x245F};`).join('')}-${year.split('').map(n => `&#${parseInt(n) + 0x245F};`).join('')}
-        </div>
-        <div class="bulletin-day"><span class="emoji">✨</span>${dayName}<span class="emoji">✨</span></div>
-        <div class="bulletin-agent"><span class="emoji">⚜️</span>${latestEntry.agent}</div>
-        <div class="bulletin-unit">unit sold:</div>
-        <div class="bulletin-unit"><span class="emoji">📍</span>${latestEntry.project} ${latestEntry.blockLot}</div>
-        <div class="bulletin-congrats"><span class="emoji">✨</span>CONGRATULATIONS<span class="emoji">✨</span></div>
-    `;
-    
-    container.appendChild(bulletin);
-    
-    // Render entries list for admin
-    renderBulletinEntriesList();
-}
-
-function addBulletinEntry() {
-    const date = document.getElementById("bulletin-date").value;
-    const agent = document.getElementById("bulletin-agent").value;
-    const project = document.getElementById("bulletin-project").value;
-    const blockLot = document.getElementById("bulletin-block-lot").value;
-    
-    if(!date || !agent || !project || !blockLot) {
-        alert("Please fill all fields");
-        return;
-    }
-    
-    bulletinEntries.push({
-        date,
-        agent,
-        project,
-        blockLot
-    });
-    
-    localStorage.setItem("bulletinEntries", JSON.stringify(bulletinEntries));
-    renderBulletin();
-    clearBulletinForm();
-}
-
-function renderBulletinEntriesList() {
-    const list = document.getElementById("bulletin-entries-list");
-    list.innerHTML = "";
-    
-    // Sort by date (newest first)
-    const sortedEntries = [...bulletinEntries].sort((a, b) => new Date(b.date) - new Date(a.date));
-    
-    sortedEntries.forEach((entry, index) => {
-        const row = list.insertRow();
-        row.innerHTML = `
-            <td>${formatDisplayDate(entry.date)}</td>
-            <td>${entry.agent}</td>
-            <td>${entry.project}</td>
-            <td>${entry.blockLot}</td>
-            <td>
-                <button onclick="editBulletinEntry(${index})">Edit</button>
-                <button onclick="deleteBulletinEntry(${index})">Delete</button>
-            </td>
-        `;
-    });
-}
-
-function formatDisplayDate(isoDate) {
-    const date = new Date(isoDate);
-    return date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
-}
-
-function editBulletinEntry(index) {
-    const entry = bulletinEntries[index];
-    document.getElementById("bulletin-date").value = entry.date;
-    document.getElementById("bulletin-agent").value = entry.agent;
-    document.getElementById("bulletin-project").value = entry.project;
-    document.getElementById("bulletin-block-lot").value = entry.blockLot;
-    
-    // For demo, we'll just remove and re-add
-    deleteBulletinEntry(index);
-}
-
-function deleteBulletinEntry(index) {
-    bulletinEntries.splice(index, 1);
-    localStorage.setItem("bulletinEntries", JSON.stringify(bulletinEntries));
-    renderBulletin();
-}
-
-function clearBulletinForm() {
-    document.getElementById("bulletin-date").value = "";
-    document.getElementById("bulletin-agent").value = "";
-    document.getElementById("bulletin-project").value = "";
-    document.getElementById("bulletin-block-lot").value = "";
-}
-
-// Sales Report functionality
-let salesData = [];
-
-function renderSalesReport() {
-    const list = document.getElementById("sales-report-list");
-    list.innerHTML = "";
-    
-    // Update current date display
-    const today = new Date();
-    document.getElementById("sales-report-date").textContent = today.toLocaleDateString('en-US', { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-    });
-    
-    // Calculate and display sales data
-    let totalQuota = 0;
-    let totalSales = 0;
-    let totalBalance = 0;
-    
-    salesData.forEach((sale, index) => {
-        const row = list.insertRow();
-        const balance = sale.quota - sale.today;
-        
-        row.innerHTML = `
-            <td>${sale.team}</td>
-            <td>${formatAsPHP(sale.quota)}</td>
-            <td>${formatAsPHP(sale.today)}</td>
-            <td>${formatAsPHP(balance)}</td>
-            ${localStorage.getItem("userRole") === "admin" ? `
-                <td>
-                    <button onclick="editSalesData(${index})">Edit</button>
-                    <button onclick="deleteSalesData(${index})">Delete</button>
-                </td>
-            ` : ''}
-        `;
-        
-        totalQuota += sale.quota;
-        totalSales += sale.today;
-        totalBalance += balance;
-    });
-    
-    // Add totals row
-    if(salesData.length > 0) {
-        const totalsRow = list.insertRow();
-        totalsRow.style.fontWeight = "bold";
-        totalsRow.innerHTML = `
-            <td>TOTAL</td>
-            <td>${formatAsPHP(totalQuota)}</td>
-            <td>${formatAsPHP(totalSales)}</td>
-            <td>${formatAsPHP(totalBalance)}</td>
-            ${localStorage.getItem("userRole") === "admin" ? `<td></td>` : ''}
-        `;
-    }
-}
-
-function saveSalesData() {
-    const team = document.getElementById("sales-team").value;
-    const quota = parseCurrency(document.getElementById("sales-quota").value);
-    const today = parseCurrency(document.getElementById("sales-today").value);
-    const editIndex = parseInt(document.getElementById("sales-edit-index").value);
-    
-    if(!team || isNaN(quota) || isNaN(today)) {
-        alert("Please fill all fields with valid data");
-        return;
-    }
-    
-    const saleData = {
-        team,
-        quota,
-        today
-    };
-    
-    if(editIndex >= 0) {
-        // Update existing
-        salesData[editIndex] = saleData;
-    } else {
-        // Add new
-        salesData.push(saleData);
-    }
-    
-    localStorage.setItem("salesData", JSON.stringify(salesData));
-    renderSalesReport();
-    clearSalesForm();
-}
-
-function editSalesData(index) {
-    const sale = salesData[index];
-    document.getElementById("sales-team").value = sale.team;
-    document.getElementById("sales-quota").value = formatAsPHP(sale.quota).replace('₱', '');
-    document.getElementById("sales-today").value = formatAsPHP(sale.today).replace('₱', '');
-    document.getElementById("sales-edit-index").value = index;
-}
-
-function deleteSalesData(index) {
-    if(confirm("Delete this sales data?")) {
-        salesData.splice(index, 1);
-        localStorage.setItem("salesData", JSON.stringify(salesData));
-        renderSalesReport();
-    }
-}
-
-function cancelSalesEdit() {
-    clearSalesForm();
-}
-
-function clearSalesForm() {
-    document.getElementById("sales-team").value = "";
-    document.getElementById("sales-quota").value = "";
-    document.getElementById("sales-today").value = "";
-    document.getElementById("sales-edit-index").value = "-1";
-}
-
-// Set today's date as default in bulletin form
-window.onload = function() {
+    // Set today's date as default in bulletin form
     document.getElementById("bulletin-date").value = new Date().toISOString().split('T')[0];
-};
+}
+
+// Login function with proper user/admin separation
+function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    const errorElement = document.getElementById("login-error");
+    
+    // Clear previous errors
+    errorElement.classList.add("hidden");
+    
+    if(!username || !password) {
+        errorElement.textContent = "Please enter both username and password";
+        errorElement.classList.remove("hidden");
+        return;
+    }
+    
+    if(username === ADMIN.username && password === ADMIN.password) {
+        // Admin login
+        localStorage.setItem("loggedIn", "true");
+        localStorage.setItem("userRole", "admin");
+        initApp("admin");
+    } else {
+        // Regular user login (view-only access)
+        localStorage.setItem("loggedIn", "true");
+        localStorage.setItem("userRole", "user");
+        initApp("user");
+    }
+}
+
+// Show content based on role
+function showContent(role) {
+    document.getElementById("login-section").classList.add("hidden");
+    document.getElementById("content-section").classList.remove("hidden");
+    
+    // Hide admin-only elements for regular users
+    if(role === "user") {
+        document.querySelectorAll(".admin-only").forEach(el => el.style.display = "none");
+        document.getElementById("sales-tab-btn").style.display = "none"; // Hide sales tab for users
+    } else {
+        document.querySelectorAll(".admin-only").forEach(el => el.style.display = "");
+        document.getElementById("sales-tab-btn").style.display = ""; // Show sales tab for admin
+    }
+    
+    loadProjects();
+}
+
+// ... (rest of your existing functions remain the same) ...
+
+// Format currency input (Philippine Peso)
+function formatCurrency(input) {
+    // Remove non-numeric characters
+    let value = input.value.replace(/[^0-9]/g, '');
+    
+    // Format with commas
+    if(value.length > 0) {
+        value = parseInt(value).toLocaleString('en-US');
+    }
+    
+    // Update input value
+    input.value = value;
+}
+
+// Parse currency string to number
+function parseCurrency(currencyString) {
+    return parseInt(currencyString.replace(/[^0-9]/g, '')) || 0;
+}
+
+// Format number as Philippine Peso
+function formatAsPHP(number) {
+    return '₱' + number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+// Logout function
+function logout() {
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("userRole");
+    location.reload();
+}
+
+// Search function with button
+function searchProjects() {
+    const searchTerm = document.getElementById("search-input").value.toLowerCase();
+    const rows = document.querySelectorAll("#projects-table tbody tr");
+    let found = false;
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        if(text.includes(searchTerm)) {
+            row.style.display = "";
+            found = true;
+        } else {
+            row.style.display = "none";
+        }
+    });
+    
+    if(!found) {
+        alert("No matching projects found");
+    }
+}
+
+// Tab switching function
+function switchTab(tabId) {
+    document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
+    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+    
+    document.getElementById(tabId).classList.add("active");
+    document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add("active");
+}
+
+// Sample data loading function
+function loadProjects() {
+    const tbody = document.querySelector("#projects-table tbody");
+    tbody.innerHTML = "";
+    
+    const isUser = localStorage.getItem("userRole") === "user";
+    
+    projects.forEach((project, index) => {
+        // Skip hidden projects for users
+        if(isUser && project.hidden_from_user) return;
+        
+        const row = tbody.insertRow();
+        
+        columns.forEach(col => {
+            const cell = row.insertCell();
+            let value = project[col.id] || "";
+            
+            if(col.type === "currency") {
+                value = formatAsPHP(value);
+            }
+            
+            cell.textContent = value;
+        });
+        
+        if(!isUser) {
+            const actionCell = row.insertCell();
+            actionCell.innerHTML = `
+                <button onclick="editRow(${index})">Edit</button>
+                <button onclick="deleteRow(${index})">Delete</button>
+            `;
+        }
+    });
+}
 </script>
 </body>
 </html>
