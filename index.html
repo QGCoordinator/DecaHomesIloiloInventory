@@ -1,35 +1,592 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Inventory System</title>
+    <title>Housing Projects</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .login-box, .admin-only { background: #f0f0f0; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #4CAF50; color: white; position: relative; }
+        button { padding: 5px 10px; margin: 2px; cursor: pointer; }
+        .hidden { display: none; }
+        input[type="text"], input[type="number"], input[type="checkbox"], select { padding: 5px; width: 100%; box-sizing: border-box; }
+        .search-box { margin: 10px 0; padding: 8px; width: 300px; }
+        .remove-col { position: absolute; right: 2px; top: 2px; font-size: 12px; cursor: pointer; }
+        .status-sold { background-color: #ffdddd; }
+        .status-with-folder { background-color: #fff3cd; }
+        .hidden-from-user { opacity: 0.7; background-color: #f8f9fa; }
+        .status-controls { display: flex; gap: 10px; margin-top: 10px; }
+        .checkbox-label { display: flex; align-items: center; gap: 5px; }
+        .filter-controls { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; }
+        .calculator { background: #e6f7ff; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .calculator h3 { margin-top: 0; }
+        .calculator-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .calculator-results { margin-top: 15px; background: #f8f9fa; padding: 15px; border-radius: 5px; }
+        .tabs { display: flex; margin-bottom: 15px; }
+        .tab { padding: 10px 15px; cursor: pointer; background: #e0e0e0; border-radius: 5px 5px 0 0; margin-right: 5px; }
+        .tab.active { background: #4CAF50; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
 </head>
 <body>
-  <!-- Add Form -->
-  <div id="adminPanel" style="display:none;">
-    <h2>Admin Panel</h2>
-    <form id="inventoryForm">
-      <input type="text" name="project" placeholder="Project" required>
-      <input type="text" name="phase" placeholder="Phase/Site" required>
-      <input type="text" name="block" placeholder="Block" required>
-      <input type="text" name="lot" placeholder="Lot" required>
-      <input type="number" name="price" placeholder="Price" required>
-      <input type="number" name="reservation_fee" placeholder="Reservation Fee">
-      <input type="number" name="equity" placeholder="Equity">
-      <button type="submit">Add Entry</button>
-    </form>
-  </div>
 
-  <!-- Search Filters -->
-  <h2>Search</h2>
-  <input type="number" id="minPrice" placeholder="Min Price">
-  <input type="number" id="maxPrice" placeholder="Max Price">
-  <label><input type="checkbox" id="reservationOnly"> Reservation Fee Paid</label>
-  <label><input type="checkbox" id="withEquity"> With Equity</label>
-  <button onclick="loadData()">Search</button>
+<!-- Login Section -->
+<div id="login-section">
+    <h2>Login</h2>
+    <div class="login-box">
+        <p>Username: <input type="text" id="username"></p>
+        <p>Password: <input type="password" id="password"></p>
+        <button onclick="login()">Login</button>
+    </div>
+</div>
 
-  <!-- Results -->
-  <div id="results"></div>
+<!-- Main Content (hidden until login) -->
+<div id="content-section" class="hidden">
+    <h2>Housing Projects 
+        <button onclick="logout()" style="float:right;">Logout</button>
+    </h2>
+    
+    <!-- Tabs -->
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('projects-tab')">Projects</div>
+        <div class="tab" onclick="switchTab('calculator-tab')">Loan Calculator</div>
+    </div>
+    
+    <!-- Projects Tab -->
+    <div id="projects-tab" class="tab-content active">
+        <!-- Filter Controls -->
+        <div class="filter-controls">
+            <div>
+                <label>Filter by Project:</label>
+                <select id="project-filter" onchange="filterProjects()">
+                    <option value="">All Projects</option>
+                </select>
+            </div>
+            <div>
+                <label>Search:</label>
+                <input type="text" id="search-input" class="search-box" placeholder="Search projects..." onkeyup="searchProjects()">
+            </div>
+        </div>
+        
+        <!-- Admin Controls -->
+        <div id="admin-controls" class="admin-only">
+            <button onclick="showAddForm()">Add New Project</button>
+            <button onclick="addCustomColumn()">Add Column</button>
+            <button onclick="saveData()">Save All Data</button>
+        </div>
+        
+        <!-- Add Project Form (Admin Only) -->
+        <div id="add-form" class="admin-only hidden" style="margin: 20px 0; padding: 15px; background: #e6f7ff; border-radius: 5px;">
+            <h3>Add/Edit Project</h3>
+            <div id="form-fields">
+                <!-- Dynamic form fields will be added here -->
+            </div>
+            <div class="status-controls">
+                <div class="checkbox-label">
+                    <input type="checkbox" id="form-hidden-from-user" data-field="hidden_from_user">
+                    <label for="form-hidden-from-user">Hide from Users</label>
+                </div>
+                <div>
+                    <label>Status:</label>
+                    <select id="form-status" data-field="status">
+                        <option value="available">Available</option>
+                        <option value="sold">Sold</option>
+                        <option value="with_folder">With Folder</option>
+                    </select>
+                </div>
+            </div>
+            <button onclick="saveProject()">Save</button>
+            <button onclick="cancelEdit()">Cancel</button>
+            <input type="hidden" id="edit-index" value="-1">
+        </div>
+        
+        <!-- Projects Table -->
+        <table id="projects-table">
+            <thead>
+                <tr id="table-header">
+                    <!-- Dynamic headers will be added here -->
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    
+    <!-- Calculator Tab -->
+    <div id="calculator-tab" class="tab-content">
+        <div class="calculator">
+            <h3>Loan Calculator</h3>
+            <div class="calculator-grid">
+                <div>
+                    <label>Loan Amount (₱):</label>
+                    <input type="number" id="loan-amount" placeholder="Enter loan amount">
+                </div>
+                <div>
+                    <label>Interest Rate (%):</label>
+                    <input type="number" id="interest-rate" placeholder="Enter interest rate" step="0.01">
+                </div>
+                <div>
+                    <label>Loan Term (years):</label>
+                    <input type="number" id="loan-term" placeholder="Enter loan term">
+                </div>
+                <div>
+                    <label>Income Requirement (% of amortization):</label>
+                    <input type="number" id="income-percent" placeholder="30" value="30">
+                </div>
+            </div>
+            <button onclick="calculateLoan()" style="margin-top: 10px;">Calculate</button>
+            
+            <div id="calculator-results" class="calculator-results hidden">
+                <h4>Calculation Results</h4>
+                <p>Monthly Amortization: <span id="monthly-amortization"></span></p>
+                <p>Total Interest: <span id="total-interest"></span></p>
+                <p>Total Payment: <span id="total-payment"></span></p>
+                <p>Required Monthly Income: <span id="required-income"></span></p>
+            </div>
+        </div>
+    </div>
+</div>
 
-  <script src="app.js"></script>
+<script>
+// Simple credentials
+const ADMIN = {
+    username: "admin",
+    password: "DecaHomesIloiloUm6"
+};
+
+// Default columns
+const DEFAULT_COLUMNS = [
+    { id: "name", title: "Project Name", type: "text" },
+    { id: "phase", title: "Phase/Site", type: "text" },
+    { id: "block", title: "Block", type: "text" },
+    { id: "lot", title: "Lot", type: "text" },
+    { id: "price", title: "Price (₱)", type: "number" },
+    { id: "reservation_fee", title: "Reservation Fee (₱)", type: "number" },
+    { id: "equity", title: "Equity (₱)", type: "number" },
+    { id: "monthly", title: "Monthly Amortization (₱)", type: "number" },
+    { id: "status", title: "Status", type: "text" }
+];
+
+// Sample initial data
+const SAMPLE_DATA = [
+    {
+        name: "DHPRR1",
+        phase: "Phase 1",
+        block: "A",
+        lot: "15",
+        price: "1500000",
+        reservation_fee: "10000",
+        equity: "300000",
+        monthly: "15000",
+        status: "available",
+        hidden_from_user: false
+    },
+    {
+        name: "DHLR",
+        phase: "Phase 1",
+        block: "A",
+        lot: "16",
+        price: "1550000",
+        reservation_fee: "10000",
+        equity: "310000",
+        monthly: "15500",
+        status: "with_folder",
+        hidden_from_user: false
+    },
+    {
+        name: "DHPRR2",
+        phase: "Phase 2",
+        block: "B",
+        lot: "5",
+        price: "1600000",
+        reservation_fee: "12000",
+        equity: "320000",
+        monthly: "16000",
+        status: "available",
+        hidden_from_user: false
+    }
+];
+
+// Initialize application
+let columns = [];
+let projects = [];
+
+// Check if logged in on page load
+if(localStorage.getItem("loggedIn")) {
+    initApp(localStorage.getItem("userRole"));
+}
+
+function initApp(role) {
+    // Load columns from storage or use defaults
+    columns = JSON.parse(localStorage.getItem("columns")) || DEFAULT_COLUMNS;
+    
+    // Load projects from storage or use sample data
+    projects = JSON.parse(localStorage.getItem("projects")) || SAMPLE_DATA;
+    
+    showContent(role);
+    renderTableHeader();
+    renderFormFields();
+    updateProjectFilter();
+}
+
+// Login function
+function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    
+    if(username === ADMIN.username && password === ADMIN.password) {
+        localStorage.setItem("loggedIn", "true");
+        localStorage.setItem("userRole", "admin");
+        initApp("admin");
+    } else if(username && password) {
+        localStorage.setItem("loggedIn", "true");
+        localStorage.setItem("userRole", "user");
+        initApp("user");
+    } else {
+        alert("Please enter credentials");
+    }
+}
+
+// Show content based on role
+function showContent(role) {
+    document.getElementById("login-section").classList.add("hidden");
+    document.getElementById("content-section").classList.remove("hidden");
+    
+    if(role === "user") {
+        document.querySelectorAll(".admin-only").forEach(el => el.style.display = "none");
+    } else {
+        document.querySelectorAll(".admin-only").forEach(el => el.style.display = "block");
+    }
+    
+    loadProjects();
+}
+
+// Switch between tabs
+function switchTab(tabId) {
+    document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
+    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+    
+    document.getElementById(tabId).classList.add("active");
+    document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add("active");
+}
+
+// Update project filter dropdown
+function updateProjectFilter() {
+    const filter = document.getElementById("project-filter");
+    filter.innerHTML = '<option value="">All Projects</option>';
+    
+    const uniqueProjects = [...new Set(projects.map(p => p.name))];
+    uniqueProjects.forEach(project => {
+        const option = document.createElement("option");
+        option.value = project;
+        option.textContent = project;
+        filter.appendChild(option);
+    });
+}
+
+// Filter projects by selected project name
+function filterProjects() {
+    const selectedProject = document.getElementById("project-filter").value;
+    const rows = document.querySelectorAll("#projects-table tbody tr");
+    
+    rows.forEach(row => {
+        if(!selectedProject || row.cells[0].textContent === selectedProject) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+}
+
+// Render table header
+function renderTableHeader() {
+    const headerRow = document.getElementById("table-header");
+    headerRow.innerHTML = "";
+    
+    columns.forEach(col => {
+        const th = document.createElement("th");
+        th.textContent = col.title;
+        
+        if(localStorage.getItem("userRole") === "admin" && !DEFAULT_COLUMNS.some(c => c.id === col.id)) {
+            const removeBtn = document.createElement("span");
+            removeBtn.className = "remove-col";
+            removeBtn.innerHTML = "×";
+            removeBtn.onclick = (e) => {
+                e.stopPropagation();
+                removeColumn(col.id);
+            };
+            th.appendChild(removeBtn);
+        }
+        
+        headerRow.appendChild(th);
+    });
+    
+    if(localStorage.getItem("userRole") === "admin") {
+        const actionTh = document.createElement("th");
+        actionTh.textContent = "Actions";
+        headerRow.appendChild(actionTh);
+    }
+}
+
+// Render form fields
+function renderFormFields() {
+    const formFields = document.getElementById("form-fields");
+    formFields.innerHTML = "";
+    
+    columns.forEach(col => {
+        if(col.id === "status") return; // Status is handled separately
+        
+        const div = document.createElement("div");
+        div.style.margin = "5px 0";
+        div.innerHTML = `
+            <label>${col.title}:</label>
+            <input type="${col.type}" id="form-${col.id}" data-field="${col.id}">
+        `;
+        formFields.appendChild(div);
+    });
+}
+
+// Load projects from storage
+function loadProjects() {
+    const tbody = document.querySelector("#projects-table tbody");
+    tbody.innerHTML = "";
+    
+    const isUser = localStorage.getItem("userRole") === "user";
+    
+    projects.forEach((project, index) => {
+        // Skip hidden projects for users
+        if(isUser && project.hidden_from_user) return;
+        
+        const row = tbody.insertRow();
+        
+        // Apply status styling
+        if(project.status === "sold") {
+            row.classList.add("status-sold");
+        } else if(project.status === "with_folder") {
+            row.classList.add("status-with-folder");
+        }
+        
+        // Apply hidden styling for admin
+        if(!isUser && project.hidden_from_user) {
+            row.classList.add("hidden-from-user");
+        }
+        
+        columns.forEach(col => {
+            const cell = row.insertCell();
+            let value = project[col.id] || "";
+            
+            if(col.id === "status") {
+                value = getStatusDisplay(value);
+            }
+            
+            cell.textContent = col.type === "number" && value ? formatNumber(value) : value;
+        });
+        
+        if(localStorage.getItem("userRole") === "admin") {
+            const actionCell = row.insertCell();
+            actionCell.innerHTML = `
+                <button onclick="editRow(${index})">Edit</button>
+                <button onclick="toggleHideFromUser(${index})">
+                    ${project.hidden_from_user ? "Show" : "Hide"}
+                </button>
+                <button onclick="deleteRow(${index})">Delete</button>
+            `;
+        }
+    });
+    
+    updateProjectFilter();
+}
+
+// Get status display text
+function getStatusDisplay(status) {
+    switch(status) {
+        case "sold": return "Sold";
+        case "with_folder": return "With Folder";
+        default: return "Available";
+    }
+}
+
+// Show add project form
+function showAddForm() {
+    document.getElementById("add-form").classList.remove("hidden");
+    document.getElementById("edit-index").value = "-1";
+    document.getElementById("form-hidden-from-user").checked = false;
+    document.getElementById("form-status").value = "available";
+    clearForm();
+}
+
+// Edit existing project
+function editRow(index) {
+    document.getElementById("add-form").classList.remove("hidden");
+    document.getElementById("edit-index").value = index;
+    
+    const project = projects[index];
+    columns.forEach(col => {
+        const field = document.getElementById(`form-${col.id}`);
+        if(field) {
+            field.value = project[col.id] || "";
+        }
+    });
+    
+    document.getElementById("form-hidden-from-user").checked = project.hidden_from_user || false;
+    document.getElementById("form-status").value = project.status || "available";
+}
+
+// Save project (add or edit)
+function saveProject() {
+    const index = parseInt(document.getElementById("edit-index").value);
+    const project = {};
+    
+    columns.forEach(col => {
+        const field = document.getElementById(`form-${col.id}`);
+        if(field) {
+            project[col.id] = field.value;
+        }
+    });
+    
+    project.hidden_from_user = document.getElementById("form-hidden-from-user").checked;
+    project.status = document.getElementById("form-status").value;
+    
+    if(index >= 0) {
+        // Update existing
+        projects[index] = project;
+    } else {
+        // Add new
+        projects.push(project);
+    }
+    
+    localStorage.setItem("projects", JSON.stringify(projects));
+    document.getElementById("add-form").classList.add("hidden");
+    loadProjects();
+}
+
+// Toggle hide from user
+function toggleHideFromUser(index) {
+    projects[index].hidden_from_user = !projects[index].hidden_from_user;
+    localStorage.setItem("projects", JSON.stringify(projects));
+    loadProjects();
+}
+
+// Add custom column
+function addCustomColumn() {
+    const colName = prompt("Enter column name:");
+    if(colName) {
+        const colId = colName.toLowerCase().replace(/[^a-z0-9]/g, '_');
+        
+        if(!columns.some(c => c.id === colId)) {
+            columns.push({
+                id: colId,
+                title: colName,
+                type: "text"
+            });
+            
+            localStorage.setItem("columns", JSON.stringify(columns));
+            renderTableHeader();
+            renderFormFields();
+            loadProjects();
+        } else {
+            alert("Column already exists");
+        }
+    }
+}
+
+// Remove custom column
+function removeColumn(colId) {
+    if(confirm("Remove this column? All data in this column will be lost.")) {
+        columns = columns.filter(c => c.id !== colId);
+        projects.forEach(p => delete p[colId]);
+        
+        localStorage.setItem("columns", JSON.stringify(columns));
+        localStorage.setItem("projects", JSON.stringify(projects));
+        renderTableHeader();
+        renderFormFields();
+        loadProjects();
+    }
+}
+
+// Format number with commas
+function formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+// Clear the form
+function clearForm() {
+    columns.forEach(col => {
+        const field = document.getElementById(`form-${col.id}`);
+        if(field) field.value = "";
+    });
+}
+
+// Cancel editing
+function cancelEdit() {
+    document.getElementById("add-form").classList.add("hidden");
+}
+
+// Delete project
+function deleteRow(index) {
+    if(confirm("Delete this project?")) {
+        projects.splice(index, 1);
+        localStorage.setItem("projects", JSON.stringify(projects));
+        loadProjects();
+    }
+}
+
+// Save all data
+function saveData() {
+    localStorage.setItem("projects", JSON.stringify(projects));
+    localStorage.setItem("columns", JSON.stringify(columns));
+    alert("All data saved successfully");
+}
+
+// Search projects
+function searchProjects() {
+    const searchTerm = document.getElementById("search-input").value.toLowerCase();
+    const rows = document.querySelectorAll("#projects-table tbody tr");
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? "" : "none";
+    });
+}
+
+// Calculate loan
+function calculateLoan() {
+    const amount = parseFloat(document.getElementById("loan-amount").value);
+    const rate = parseFloat(document.getElementById("interest-rate").value) / 100;
+    const term = parseInt(document.getElementById("loan-term").value);
+    const incomePercent = parseInt(document.getElementById("income-percent").value) / 100;
+    
+    if(!amount || !rate || !term) {
+        alert("Please fill all required fields");
+        return;
+    }
+    
+    const monthlyRate = rate / 12;
+    const payments = term * 12;
+    
+    // Monthly payment calculation
+    const monthly = (amount * monthlyRate * Math.pow(1 + monthlyRate, payments)) / 
+                    (Math.pow(1 + monthlyRate, payments) - 1);
+    
+    const totalPayment = monthly * payments;
+    const totalInterest = totalPayment - amount;
+    const requiredIncome = monthly / incomePercent;
+    
+    document.getElementById("monthly-amortization").textContent = "₱" + monthly.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    document.getElementById("total-interest").textContent = "₱" + totalInterest.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    document.getElementById("total-payment").textContent = "₱" + totalPayment.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    document.getElementById("required-income").textContent = "₱" + requiredIncome.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    
+    document.getElementById("calculator-results").classList.remove("hidden");
+}
+
+// Logout function
+function logout() {
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("userRole");
+    location.reload();
+}
+</script>
 </body>
 </html>
