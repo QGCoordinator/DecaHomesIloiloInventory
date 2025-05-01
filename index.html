@@ -30,6 +30,20 @@
         .tab-content.active { display: block; }
         .column-edit { position: absolute; right: 20px; top: 2px; font-size: 12px; cursor: pointer; }
         .dragging { opacity: 0.5; }
+        .currency-input { position: relative; }
+        .currency-input::before { content: "₱"; position: absolute; left: 5px; top: 5px; }
+        .currency-input input { padding-left: 20px !important; }
+        .bulletin { background-color: #fff8e1; padding: 20px; border-radius: 10px; margin: 20px 0; text-align: center; border: 2px solid #ffc107; }
+        .bulletin-title { font-size: 24px; font-weight: bold; color: #ff6f00; margin-bottom: 10px; }
+        .bulletin-date { font-size: 28px; font-weight: bold; margin: 10px 0; }
+        .bulletin-day { font-size: 20px; color: #ff6f00; margin-bottom: 15px; }
+        .bulletin-agent { font-size: 18px; font-weight: bold; margin: 10px 0; }
+        .bulletin-unit { font-size: 16px; margin: 5px 0; }
+        .bulletin-congrats { font-size: 20px; font-weight: bold; color: #ff6f00; margin-top: 15px; }
+        .emoji { font-size: 20px; }
+        .sales-report { background-color: #e8f5e9; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .sales-report-title { font-size: 20px; font-weight: bold; text-align: center; margin-bottom: 15px; color: #2e7d32; }
+        .current-date { font-weight: bold; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -54,182 +68,115 @@
     <div class="tabs">
         <div class="tab active" onclick="switchTab('projects-tab')">Projects</div>
         <div class="tab" onclick="switchTab('calculator-tab')">Loan Calculator</div>
+        <div class="tab" onclick="switchTab('bulletin-tab')">Sold Units</div>
+        <div class="tab" onclick="switchTab('sales-tab')">Sales Report</div>
     </div>
     
     <!-- Projects Tab -->
     <div id="projects-tab" class="tab-content active">
-        <!-- Filter Controls -->
-        <div class="filter-controls">
-            <div>
-                <label>Filter by Project:</label>
-                <select id="project-filter" onchange="filterProjects()">
-                    <option value="">All Projects</option>
-                </select>
-            </div>
-            <div>
-                <label>Search:</label>
-                <input type="text" id="search-input" class="search-box" placeholder="Search projects..." onkeyup="searchProjects()">
-            </div>
-        </div>
-        
-        <!-- Admin Controls -->
-        <div id="admin-controls" class="admin-only">
-            <button onclick="showAddForm()">Add New Project</button>
-            <button onclick="addCustomColumn()">Add Column</button>
-            <button onclick="saveData()">Save All Data</button>
-            <button onclick="showColumnManager()">Manage Columns</button>
-        </div>
-        
-        <!-- Column Manager (Admin Only) -->
-        <div id="column-manager" class="admin-only hidden" style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 5px;">
-            <h3>Manage Columns</h3>
-            <div id="column-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <!-- Columns will be listed here -->
-            </div>
-            <button onclick="saveColumnChanges()" style="margin-top: 10px;">Save Changes</button>
-            <button onclick="hideColumnManager()">Cancel</button>
-        </div>
-        
-        <!-- Add Project Form (Admin Only) -->
-        <div id="add-form" class="admin-only hidden" style="margin: 20px 0; padding: 15px; background: #e6f7ff; border-radius: 5px;">
-            <h3>Add/Edit Project</h3>
-            <div id="form-fields">
-                <!-- Dynamic form fields will be added here -->
-            </div>
-            <div class="status-controls">
-                <div class="checkbox-label">
-                    <input type="checkbox" id="form-hidden-from-user" data-field="hidden_from_user">
-                    <label for="form-hidden-from-user">Hide from Users</label>
-                </div>
-                <div>
-                    <label>Status:</label>
-                    <select id="form-status" data-field="status">
-                        <option value="available">Available</option>
-                        <option value="sold">Sold</option>
-                        <option value="with_folder">With Folder</option>
-                    </select>
-                </div>
-            </div>
-            <button onclick="saveProject()">Save</button>
-            <button onclick="cancelEdit()">Cancel</button>
-            <input type="hidden" id="edit-index" value="-1">
-        </div>
-        
-        <!-- Projects Table -->
-        <table id="projects-table">
-            <thead>
-                <tr id="table-header">
-                    <!-- Dynamic headers will be added here -->
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+        <!-- ... (existing projects tab content) ... -->
     </div>
     
     <!-- Calculator Tab -->
     <div id="calculator-tab" class="tab-content">
-        <div class="calculator">
-            <h3>Loan Calculator</h3>
-            <div class="calculator-grid">
+        <!-- ... (existing calculator tab content) ... -->
+    </div>
+    
+    <!-- Sold Units Bulletin Tab -->
+    <div id="bulletin-tab" class="tab-content">
+        <div id="bulletin-container">
+            <!-- Bulletin will be generated here -->
+        </div>
+        
+        <div id="bulletin-form" class="admin-only" style="margin-top: 30px;">
+            <h3>Add Sold Unit</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <div>
-                    <label>Loan Amount (₱):</label>
-                    <input type="number" id="loan-amount" placeholder="Enter loan amount">
+                    <label>Date:</label>
+                    <input type="date" id="bulletin-date">
                 </div>
                 <div>
-                    <label>Interest Rate (%):</label>
-                    <input type="number" id="interest-rate" placeholder="Enter interest rate" step="0.01">
+                    <label>Agent Name:</label>
+                    <input type="text" id="bulletin-agent">
                 </div>
                 <div>
-                    <label>Loan Term (years):</label>
-                    <input type="number" id="loan-term" placeholder="Enter loan term">
+                    <label>Project:</label>
+                    <input type="text" id="bulletin-project">
                 </div>
                 <div>
-                    <label>Income Requirement (% of amortization):</label>
-                    <input type="number" id="income-percent" placeholder="30" value="30">
+                    <label>Block-Lot:</label>
+                    <input type="text" id="bulletin-block-lot">
                 </div>
             </div>
-            <button onclick="calculateLoan()" style="margin-top: 10px;">Calculate</button>
+            <button onclick="addBulletinEntry()" style="margin-top: 15px;">Add to Bulletin</button>
+        </div>
+        
+        <div id="bulletin-entries" class="admin-only" style="margin-top: 30px;">
+            <h3>Manage Bulletin Entries</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Agent</th>
+                        <th>Project</th>
+                        <th>Block-Lot</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="bulletin-entries-list">
+                    <!-- Bulletin entries will be listed here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Sales Report Tab -->
+    <div id="sales-tab" class="tab-content">
+        <div class="sales-report">
+            <div class="sales-report-title">Daily Sales Report Quintilla Group</div>
+            <div class="current-date" id="sales-report-date"></div>
             
-            <div id="calculator-results" class="calculator-results hidden">
-                <h4>Calculation Results</h4>
-                <p>Monthly Amortization: <span id="monthly-amortization"></span></p>
-                <p>Total Interest: <span id="total-interest"></span></p>
-                <p>Total Payment: <span id="total-payment"></span></p>
-                <p>Required Monthly Income: <span id="required-income"></span></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Team Name</th>
+                        <th>Quota (₱)</th>
+                        <th>Sales of the Day (₱)</th>
+                        <th>Balance (₱)</th>
+                        <th class="admin-only">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="sales-report-list">
+                    <!-- Sales data will be listed here -->
+                </tbody>
+            </table>
+            
+            <div id="sales-form" class="admin-only" style="margin-top: 20px;">
+                <h3>Add/Edit Sales Data</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label>Team Name:</label>
+                        <input type="text" id="sales-team">
+                    </div>
+                    <div class="currency-input">
+                        <label>Quota:</label>
+                        <input type="text" id="sales-quota" oninput="formatCurrency(this)">
+                    </div>
+                    <div class="currency-input">
+                        <label>Sales of the Day:</label>
+                        <input type="text" id="sales-today" oninput="formatCurrency(this)">
+                    </div>
+                </div>
+                <input type="hidden" id="sales-edit-index" value="-1">
+                <button onclick="saveSalesData()" style="margin-top: 15px;">Save</button>
+                <button onclick="cancelSalesEdit()">Cancel</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-// Simple credentials
-const ADMIN = {
-    username: "admin",
-    password: "DecaHomesIloiloUm6"
-};
-
-// Default columns
-const DEFAULT_COLUMNS = [
-    { id: "name", title: "Project Name", type: "text" },
-    { id: "phase", title: "Phase/Site", type: "text" },
-    { id: "block", title: "Block", type: "text" },
-    { id: "lot", title: "Lot", type: "text" },
-    { id: "price", title: "Price (₱)", type: "number" },
-    { id: "reservation_fee", title: "Reservation Fee (₱)", type: "number" },
-    { id: "equity", title: "Equity (₱)", type: "number" },
-    { id: "monthly", title: "Monthly Amortization (₱)", type: "number" },
-    { id: "status", title: "Status", type: "text" }
-];
-
-// Sample initial data
-const SAMPLE_DATA = [
-    {
-        name: "DHPRR1",
-        phase: "Phase 1",
-        block: "A",
-        lot: "15",
-        price: "1500000",
-        reservation_fee: "10000",
-        equity: "300000",
-        monthly: "15000",
-        status: "available",
-        hidden_from_user: false
-    },
-    {
-        name: "DHLR",
-        phase: "Phase 1",
-        block: "A",
-        lot: "16",
-        price: "1550000",
-        reservation_fee: "10000",
-        equity: "310000",
-        monthly: "15500",
-        status: "with_folder",
-        hidden_from_user: false
-    },
-    {
-        name: "DHPRR2",
-        phase: "Phase 2",
-        block: "B",
-        lot: "5",
-        price: "1600000",
-        reservation_fee: "12000",
-        equity: "320000",
-        monthly: "16000",
-        status: "available",
-        hidden_from_user: false
-    }
-];
-
-// Initialize application
-let columns = [];
-let projects = [];
-let draggedColumn = null;
-
-// Check if logged in on page load
-if(localStorage.getItem("loggedIn")) {
-    initApp(localStorage.getItem("userRole"));
-}
+// ... (previous JavaScript code remains the same until initApp function) ...
 
 function initApp(role) {
     // Load columns from storage or use defaults
@@ -238,491 +185,265 @@ function initApp(role) {
     // Load projects from storage or use sample data
     projects = JSON.parse(localStorage.getItem("projects")) || SAMPLE_DATA;
     
+    // Load bulletin entries
+    bulletinEntries = JSON.parse(localStorage.getItem("bulletinEntries")) || [];
+    
+    // Load sales data
+    salesData = JSON.parse(localStorage.getItem("salesData")) || [];
+    
     showContent(role);
     renderTableHeader();
     renderFormFields();
     updateProjectFilter();
     setupColumnDragAndDrop();
+    renderBulletin();
+    renderSalesReport();
 }
 
-// Login function
-function login() {
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
+// ... (keep all existing functions until the end, then add these new ones) ...
+
+// Bulletin functionality
+let bulletinEntries = [];
+
+function renderBulletin() {
+    const container = document.getElementById("bulletin-container");
+    container.innerHTML = "";
     
-    if(username === ADMIN.username && password === ADMIN.password) {
-        localStorage.setItem("loggedIn", "true");
-        localStorage.setItem("userRole", "admin");
-        initApp("admin");
-    } else if(username && password) {
-        localStorage.setItem("loggedIn", "true");
-        localStorage.setItem("userRole", "user");
-        initApp("user");
-    } else {
-        alert("Please enter credentials");
-    }
-}
-
-// Show content based on role
-function showContent(role) {
-    document.getElementById("login-section").classList.add("hidden");
-    document.getElementById("content-section").classList.remove("hidden");
+    // Get today's entries
+    const today = new Date().toISOString().split('T')[0];
+    const todayEntries = bulletinEntries.filter(entry => entry.date === today);
     
-    if(role === "user") {
-        document.querySelectorAll(".admin-only").forEach(el => el.style.display = "none");
-    } else {
-        document.querySelectorAll(".admin-only").forEach(el => el.style.display = "block");
-    }
-    
-    loadProjects();
-}
-
-// Switch between tabs
-function switchTab(tabId) {
-    document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
-    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
-    
-    document.getElementById(tabId).classList.add("active");
-    document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add("active");
-}
-
-// Update project filter dropdown
-function updateProjectFilter() {
-    const filter = document.getElementById("project-filter");
-    filter.innerHTML = '<option value="">All Projects</option>';
-    
-    const uniqueProjects = [...new Set(projects.map(p => p.name))];
-    uniqueProjects.forEach(project => {
-        const option = document.createElement("option");
-        option.value = project;
-        option.textContent = project;
-        filter.appendChild(option);
-    });
-}
-
-// Filter projects by selected project name
-function filterProjects() {
-    const selectedProject = document.getElementById("project-filter").value;
-    const rows = document.querySelectorAll("#projects-table tbody tr");
-    
-    rows.forEach(row => {
-        if(!selectedProject || row.cells[0].textContent === selectedProject) {
-            row.style.display = "";
-        } else {
-            row.style.display = "none";
-        }
-    });
-}
-
-// Render table header
-function renderTableHeader() {
-    const headerRow = document.getElementById("table-header");
-    headerRow.innerHTML = "";
-    
-    columns.forEach(col => {
-        const th = document.createElement("th");
-        th.textContent = col.title;
-        th.setAttribute("data-column-id", col.id);
-        th.draggable = localStorage.getItem("userRole") === "admin";
-        
-        if(localStorage.getItem("userRole") === "admin") {
-            const editBtn = document.createElement("span");
-            editBtn.className = "column-edit";
-            editBtn.innerHTML = "✏️";
-            editBtn.onclick = (e) => {
-                e.stopPropagation();
-                editColumnName(col.id);
-            };
-            th.appendChild(editBtn);
-            
-            if(!DEFAULT_COLUMNS.some(c => c.id === col.id)) {
-                const removeBtn = document.createElement("span");
-                removeBtn.className = "remove-col";
-                removeBtn.innerHTML = "×";
-                removeBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    removeColumn(col.id);
-                };
-                th.appendChild(removeBtn);
-            }
-        }
-        
-        headerRow.appendChild(th);
-    });
-    
-    if(localStorage.getItem("userRole") === "admin") {
-        const actionTh = document.createElement("th");
-        actionTh.textContent = "Actions";
-        headerRow.appendChild(actionTh);
-    }
-}
-
-// Setup drag and drop for columns
-function setupColumnDragAndDrop() {
-    const headerRow = document.getElementById("table-header");
-    if(!headerRow) return;
-    
-    headerRow.querySelectorAll("th").forEach(th => {
-        th.addEventListener("dragstart", (e) => {
-            draggedColumn = e.target;
-            e.target.classList.add("dragging");
-            e.dataTransfer.setData("text/plain", e.target.getAttribute("data-column-id"));
-        });
-        
-        th.addEventListener("dragend", () => {
-            draggedColumn.classList.remove("dragging");
-            draggedColumn = null;
-        });
-        
-        th.addEventListener("dragover", (e) => {
-            e.preventDefault();
-        });
-        
-        th.addEventListener("drop", (e) => {
-            e.preventDefault();
-            if(draggedColumn && e.target !== draggedColumn && e.target.tagName === "TH") {
-                const draggedId = draggedColumn.getAttribute("data-column-id");
-                const targetId = e.target.getAttribute("data-column-id");
-                
-                if(draggedId && targetId) {
-                    const draggedIndex = columns.findIndex(c => c.id === draggedId);
-                    const targetIndex = columns.findIndex(c => c.id === targetId);
-                    
-                    if(draggedIndex >= 0 && targetIndex >= 0) {
-                        // Move column in array
-                        const [movedColumn] = columns.splice(draggedIndex, 1);
-                        columns.splice(targetIndex, 0, movedColumn);
-                        
-                        // Save and re-render
-                        localStorage.setItem("columns", JSON.stringify(columns));
-                        renderTableHeader();
-                        loadProjects();
-                        renderFormFields();
-                    }
-                }
-            }
-        });
-    });
-}
-
-// Edit column name
-function editColumnName(columnId) {
-    const column = columns.find(c => c.id === columnId);
-    if(!column) return;
-    
-    const newName = prompt("Edit column name:", column.title);
-    if(newName && newName !== column.title) {
-        column.title = newName;
-        localStorage.setItem("columns", JSON.stringify(columns));
-        renderTableHeader();
-        renderFormFields();
-        loadProjects();
-    }
-}
-
-// Show column manager
-function showColumnManager() {
-    const columnList = document.getElementById("column-list");
-    columnList.innerHTML = "";
-    
-    columns.forEach(col => {
-        const div = document.createElement("div");
-        div.className = "checkbox-label";
-        div.innerHTML = `
-            <input type="checkbox" id="col-${col.id}" checked disabled>
-            <label for="col-${col.id}">${col.title}</label>
-            <input type="text" value="${col.title}" id="edit-col-${col.id}" style="flex-grow:1;">
-            <button onclick="updateColumnName('${col.id}')">Update</button>
-        `;
-        columnList.appendChild(div);
-    });
-    
-    document.getElementById("column-manager").classList.remove("hidden");
-}
-
-// Hide column manager
-function hideColumnManager() {
-    document.getElementById("column-manager").classList.add("hidden");
-}
-
-// Update column name from manager
-function updateColumnName(columnId) {
-    const newName = document.getElementById(`edit-col-${columnId}`).value;
-    const column = columns.find(c => c.id === columnId);
-    
-    if(column && newName && newName !== column.title) {
-        column.title = newName;
-    }
-}
-
-// Save column changes from manager
-function saveColumnChanges() {
-    localStorage.setItem("columns", JSON.stringify(columns));
-    hideColumnManager();
-    renderTableHeader();
-    renderFormFields();
-    loadProjects();
-}
-
-// Render form fields
-function renderFormFields() {
-    const formFields = document.getElementById("form-fields");
-    formFields.innerHTML = "";
-    
-    columns.forEach(col => {
-        if(col.id === "status") return; // Status is handled separately
-        
-        const div = document.createElement("div");
-        div.style.margin = "5px 0";
-        div.innerHTML = `
-            <label>${col.title}:</label>
-            <input type="${col.type}" id="form-${col.id}" data-field="${col.id}">
-        `;
-        formFields.appendChild(div);
-    });
-}
-
-// Load projects from storage
-function loadProjects() {
-    const tbody = document.querySelector("#projects-table tbody");
-    tbody.innerHTML = "";
-    
-    const isUser = localStorage.getItem("userRole") === "user";
-    
-    projects.forEach((project, index) => {
-        // Skip hidden projects for users
-        if(isUser && project.hidden_from_user) return;
-        
-        const row = tbody.insertRow();
-        
-        // Apply status styling
-        if(project.status === "sold") {
-            row.classList.add("status-sold");
-        } else if(project.status === "with_folder") {
-            row.classList.add("status-with-folder");
-        }
-        
-        // Apply hidden styling for admin
-        if(!isUser && project.hidden_from_user) {
-            row.classList.add("hidden-from-user");
-        }
-        
-        columns.forEach(col => {
-            const cell = row.insertCell();
-            let value = project[col.id] || "";
-            
-            if(col.id === "status") {
-                value = getStatusDisplay(value);
-            }
-            
-            cell.textContent = col.type === "number" && value ? formatNumber(value) : value;
-        });
-        
-        if(localStorage.getItem("userRole") === "admin") {
-            const actionCell = row.insertCell();
-            actionCell.innerHTML = `
-                <button onclick="editRow(${index})">Edit</button>
-                <button onclick="toggleHideFromUser(${index})">
-                    ${project.hidden_from_user ? "Show" : "Hide"}
-                </button>
-                <button onclick="deleteRow(${index})">Delete</button>
-            `;
-        }
-    });
-    
-    updateProjectFilter();
-    setupColumnDragAndDrop();
-}
-
-// Get status display text
-function getStatusDisplay(status) {
-    switch(status) {
-        case "sold": return "Sold";
-        case "with_folder": return "With Folder";
-        default: return "Available";
-    }
-}
-
-// Show add project form
-function showAddForm() {
-    document.getElementById("add-form").classList.remove("hidden");
-    document.getElementById("edit-index").value = "-1";
-    document.getElementById("form-hidden-from-user").checked = false;
-    document.getElementById("form-status").value = "available";
-    clearForm();
-}
-
-// Edit existing project
-function editRow(index) {
-    document.getElementById("add-form").classList.remove("hidden");
-    document.getElementById("edit-index").value = index;
-    
-    const project = projects[index];
-    columns.forEach(col => {
-        const field = document.getElementById(`form-${col.id}`);
-        if(field) {
-            field.value = project[col.id] || "";
-        }
-    });
-    
-    document.getElementById("form-hidden-from-user").checked = project.hidden_from_user || false;
-    document.getElementById("form-status").value = project.status || "available";
-}
-
-// Save project (add or edit)
-function saveProject() {
-    const index = parseInt(document.getElementById("edit-index").value);
-    const project = {};
-    
-    columns.forEach(col => {
-        const field = document.getElementById(`form-${col.id}`);
-        if(field) {
-            project[col.id] = field.value;
-        }
-    });
-    
-    project.hidden_from_user = document.getElementById("form-hidden-from-user").checked;
-    project.status = document.getElementById("form-status").value;
-    
-    if(index >= 0) {
-        // Update existing
-        projects[index] = project;
-    } else {
-        // Add new
-        projects.push(project);
-    }
-    
-    localStorage.setItem("projects", JSON.stringify(projects));
-    document.getElementById("add-form").classList.add("hidden");
-    loadProjects();
-}
-
-// Toggle hide from user
-function toggleHideFromUser(index) {
-    projects[index].hidden_from_user = !projects[index].hidden_from_user;
-    localStorage.setItem("projects", JSON.stringify(projects));
-    loadProjects();
-}
-
-// Add custom column
-function addCustomColumn() {
-    const colName = prompt("Enter column name:");
-    if(colName) {
-        const colId = colName.toLowerCase().replace(/[^a-z0-9]/g, '_');
-        
-        if(!columns.some(c => c.id === colId)) {
-            columns.push({
-                id: colId,
-                title: colName,
-                type: "text"
-            });
-            
-            localStorage.setItem("columns", JSON.stringify(columns));
-            renderTableHeader();
-            renderFormFields();
-            loadProjects();
-        } else {
-            alert("Column already exists");
-        }
-    }
-}
-
-// Remove custom column
-function removeColumn(colId) {
-    if(confirm("Remove this column? All data in this column will be lost.")) {
-        columns = columns.filter(c => c.id !== colId);
-        projects.forEach(p => delete p[colId]);
-        
-        localStorage.setItem("columns", JSON.stringify(columns));
-        localStorage.setItem("projects", JSON.stringify(projects));
-        renderTableHeader();
-        renderFormFields();
-        loadProjects();
-    }
-}
-
-// Format number with commas
-function formatNumber(num) {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
-// Clear the form
-function clearForm() {
-    columns.forEach(col => {
-        const field = document.getElementById(`form-${col.id}`);
-        if(field) field.value = "";
-    });
-}
-
-// Cancel editing
-function cancelEdit() {
-    document.getElementById("add-form").classList.add("hidden");
-}
-
-// Delete project
-function deleteRow(index) {
-    if(confirm("Delete this project?")) {
-        projects.splice(index, 1);
-        localStorage.setItem("projects", JSON.stringify(projects));
-        loadProjects();
-    }
-}
-
-// Save all data
-function saveData() {
-    localStorage.setItem("projects", JSON.stringify(projects));
-    localStorage.setItem("columns", JSON.stringify(columns));
-    alert("All data saved successfully");
-}
-
-// Search projects
-function searchProjects() {
-    const searchTerm = document.getElementById("search-input").value.toLowerCase();
-    const rows = document.querySelectorAll("#projects-table tbody tr");
-    
-    rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(searchTerm) ? "" : "none";
-    });
-}
-
-// Calculate loan
-function calculateLoan() {
-    const amount = parseFloat(document.getElementById("loan-amount").value);
-    const rate = parseFloat(document.getElementById("interest-rate").value) / 100;
-    const term = parseInt(document.getElementById("loan-term").value);
-    const incomePercent = parseInt(document.getElementById("income-percent").value) / 100;
-    
-    if(!amount || !rate || !term) {
-        alert("Please fill all required fields");
+    if(todayEntries.length === 0) {
+        container.innerHTML = "<p>No units sold today</p>";
         return;
     }
     
-    const monthlyRate = rate / 12;
-    const payments = term * 12;
+    // For demo, show the most recent entry
+    const latestEntry = todayEntries[todayEntries.length - 1];
     
-    // Monthly payment calculation
-    const monthly = (amount * monthlyRate * Math.pow(1 + monthlyRate, payments)) / 
-                    (Math.pow(1 + monthlyRate, payments) - 1);
+    // Format the date
+    const dateParts = latestEntry.date.split('-');
+    const month = dateParts[1];
+    const day = dateParts[2];
+    const year = dateParts[0];
     
-    const totalPayment = monthly * payments;
-    const totalInterest = totalPayment - amount;
-    const requiredIncome = monthly / incomePercent;
+    // Get day name
+    const dateObj = new Date(latestEntry.date);
+    const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
     
-    document.getElementById("monthly-amortization").textContent = "₱" + monthly.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    document.getElementById("total-interest").textContent = "₱" + totalInterest.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    document.getElementById("total-payment").textContent = "₱" + totalPayment.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    document.getElementById("required-income").textContent = "₱" + requiredIncome.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    // Create bulletin
+    const bulletin = document.createElement("div");
+    bulletin.className = "bulletin";
+    bulletin.innerHTML = `
+        <div class="bulletin-title"><span class="emoji">✨</span>RESERVATION OF THE DAY!<span class="emoji">✨</span></div>
+        <div class="bulletin-date">
+            ${month.split('').map(n => `&#${parseInt(n) + 0x245F};`).join('')}-${day.split('').map(n => `&#${parseInt(n) + 0x245F};`).join('')}-${year.split('').map(n => `&#${parseInt(n) + 0x245F};`).join('')}
+        </div>
+        <div class="bulletin-day"><span class="emoji">✨</span>${dayName}<span class="emoji">✨</span></div>
+        <div class="bulletin-agent"><span class="emoji">⚜️</span>${latestEntry.agent}</div>
+        <div class="bulletin-unit">unit sold:</div>
+        <div class="bulletin-unit"><span class="emoji">📍</span>${latestEntry.project} ${latestEntry.blockLot}</div>
+        <div class="bulletin-congrats"><span class="emoji">✨</span>CONGRATULATIONS<span class="emoji">✨</span></div>
+    `;
     
-    document.getElementById("calculator-results").classList.remove("hidden");
+    container.appendChild(bulletin);
+    
+    // Render entries list for admin
+    renderBulletinEntriesList();
 }
 
-// Logout function
-function logout() {
-    localStorage.removeItem("loggedIn");
-    localStorage.removeItem("userRole");
-    location.reload();
+function addBulletinEntry() {
+    const date = document.getElementById("bulletin-date").value;
+    const agent = document.getElementById("bulletin-agent").value;
+    const project = document.getElementById("bulletin-project").value;
+    const blockLot = document.getElementById("bulletin-block-lot").value;
+    
+    if(!date || !agent || !project || !blockLot) {
+        alert("Please fill all fields");
+        return;
+    }
+    
+    bulletinEntries.push({
+        date,
+        agent,
+        project,
+        blockLot
+    });
+    
+    localStorage.setItem("bulletinEntries", JSON.stringify(bulletinEntries));
+    renderBulletin();
+    clearBulletinForm();
 }
+
+function renderBulletinEntriesList() {
+    const list = document.getElementById("bulletin-entries-list");
+    list.innerHTML = "";
+    
+    // Sort by date (newest first)
+    const sortedEntries = [...bulletinEntries].sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    sortedEntries.forEach((entry, index) => {
+        const row = list.insertRow();
+        row.innerHTML = `
+            <td>${formatDisplayDate(entry.date)}</td>
+            <td>${entry.agent}</td>
+            <td>${entry.project}</td>
+            <td>${entry.blockLot}</td>
+            <td>
+                <button onclick="editBulletinEntry(${index})">Edit</button>
+                <button onclick="deleteBulletinEntry(${index})">Delete</button>
+            </td>
+        `;
+    });
+}
+
+function formatDisplayDate(isoDate) {
+    const date = new Date(isoDate);
+    return date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+}
+
+function editBulletinEntry(index) {
+    const entry = bulletinEntries[index];
+    document.getElementById("bulletin-date").value = entry.date;
+    document.getElementById("bulletin-agent").value = entry.agent;
+    document.getElementById("bulletin-project").value = entry.project;
+    document.getElementById("bulletin-block-lot").value = entry.blockLot;
+    
+    // For demo, we'll just remove and re-add
+    deleteBulletinEntry(index);
+}
+
+function deleteBulletinEntry(index) {
+    bulletinEntries.splice(index, 1);
+    localStorage.setItem("bulletinEntries", JSON.stringify(bulletinEntries));
+    renderBulletin();
+}
+
+function clearBulletinForm() {
+    document.getElementById("bulletin-date").value = "";
+    document.getElementById("bulletin-agent").value = "";
+    document.getElementById("bulletin-project").value = "";
+    document.getElementById("bulletin-block-lot").value = "";
+}
+
+// Sales Report functionality
+let salesData = [];
+
+function renderSalesReport() {
+    const list = document.getElementById("sales-report-list");
+    list.innerHTML = "";
+    
+    // Update current date display
+    const today = new Date();
+    document.getElementById("sales-report-date").textContent = today.toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    });
+    
+    // Calculate and display sales data
+    let totalQuota = 0;
+    let totalSales = 0;
+    let totalBalance = 0;
+    
+    salesData.forEach((sale, index) => {
+        const row = list.insertRow();
+        const balance = sale.quota - sale.today;
+        
+        row.innerHTML = `
+            <td>${sale.team}</td>
+            <td>${formatAsPHP(sale.quota)}</td>
+            <td>${formatAsPHP(sale.today)}</td>
+            <td>${formatAsPHP(balance)}</td>
+            ${localStorage.getItem("userRole") === "admin" ? `
+                <td>
+                    <button onclick="editSalesData(${index})">Edit</button>
+                    <button onclick="deleteSalesData(${index})">Delete</button>
+                </td>
+            ` : ''}
+        `;
+        
+        totalQuota += sale.quota;
+        totalSales += sale.today;
+        totalBalance += balance;
+    });
+    
+    // Add totals row
+    if(salesData.length > 0) {
+        const totalsRow = list.insertRow();
+        totalsRow.style.fontWeight = "bold";
+        totalsRow.innerHTML = `
+            <td>TOTAL</td>
+            <td>${formatAsPHP(totalQuota)}</td>
+            <td>${formatAsPHP(totalSales)}</td>
+            <td>${formatAsPHP(totalBalance)}</td>
+            ${localStorage.getItem("userRole") === "admin" ? `<td></td>` : ''}
+        `;
+    }
+}
+
+function saveSalesData() {
+    const team = document.getElementById("sales-team").value;
+    const quota = parseCurrency(document.getElementById("sales-quota").value);
+    const today = parseCurrency(document.getElementById("sales-today").value);
+    const editIndex = parseInt(document.getElementById("sales-edit-index").value);
+    
+    if(!team || isNaN(quota) || isNaN(today)) {
+        alert("Please fill all fields with valid data");
+        return;
+    }
+    
+    const saleData = {
+        team,
+        quota,
+        today
+    };
+    
+    if(editIndex >= 0) {
+        // Update existing
+        salesData[editIndex] = saleData;
+    } else {
+        // Add new
+        salesData.push(saleData);
+    }
+    
+    localStorage.setItem("salesData", JSON.stringify(salesData));
+    renderSalesReport();
+    clearSalesForm();
+}
+
+function editSalesData(index) {
+    const sale = salesData[index];
+    document.getElementById("sales-team").value = sale.team;
+    document.getElementById("sales-quota").value = formatAsPHP(sale.quota).replace('₱', '');
+    document.getElementById("sales-today").value = formatAsPHP(sale.today).replace('₱', '');
+    document.getElementById("sales-edit-index").value = index;
+}
+
+function deleteSalesData(index) {
+    if(confirm("Delete this sales data?")) {
+        salesData.splice(index, 1);
+        localStorage.setItem("salesData", JSON.stringify(salesData));
+        renderSalesReport();
+    }
+}
+
+function cancelSalesEdit() {
+    clearSalesForm();
+}
+
+function clearSalesForm() {
+    document.getElementById("sales-team").value = "";
+    document.getElementById("sales-quota").value = "";
+    document.getElementById("sales-today").value = "";
+    document.getElementById("sales-edit-index").value = "-1";
+}
+
+// Set today's date as default in bulletin form
+window.onload = function() {
+    document.getElementById("bulletin-date").value = new Date().toISOString().split('T')[0];
+};
 </script>
 </body>
 </html>
