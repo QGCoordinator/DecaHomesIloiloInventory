@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Inventory System</title>
+</head>
+<body>
+  <!-- Add Form -->
+  <div id="adminPanel" style="display:none;">
+    <h2>Admin Panel</h2>
+    <form id="inventoryForm">
+      <input type="text" name="project" placeholder="Project" required>
+      <input type="text" name="phase" placeholder="Phase/Site" required>
+      <input type="text" name="block" placeholder="Block" required>
+      <input type="text" name="lot" placeholder="Lot" required>
+      <input type="number" name="price" placeholder="Price" required>
+      <input type="number" name="reservation_fee" placeholder="Reservation Fee">
+      <input type="number" name="equity" placeholder="Equity">
+      <button type="submit">Add Entry</button>
+    </form>
+  </div>
+
+  <!-- Search Filters -->
+  <h2>Search</h2>
+  <input type="number" id="minPrice" placeholder="Min Price">
+  <input type="number" id="maxPrice" placeholder="Max Price">
+  <label><input type="checkbox" id="reservationOnly"> Reservation Fee Paid</label>
+  <label><input type="checkbox" id="withEquity"> With Equity</label>
+  <button onclick="loadData()">Search</button>
+
+  <!-- Results -->
+  <div id="results"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
