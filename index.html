@@ -7,7 +7,7 @@
         .login-box, .admin-only { background: #f0f0f0; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #4CAF50; color: white; position: relative; }
+        th { background-color: #4CAF50; color: white; position: relative; cursor: move; }
         button { padding: 5px 10px; margin: 2px; cursor: pointer; }
         .hidden { display: none; }
         input[type="text"], input[type="number"], input[type="checkbox"], select { padding: 5px; width: 100%; box-sizing: border-box; }
@@ -28,6 +28,8 @@
         .tab.active { background: #4CAF50; color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+        .column-edit { position: absolute; right: 20px; top: 2px; font-size: 12px; cursor: pointer; }
+        .dragging { opacity: 0.5; }
     </style>
 </head>
 <body>
@@ -75,6 +77,17 @@
             <button onclick="showAddForm()">Add New Project</button>
             <button onclick="addCustomColumn()">Add Column</button>
             <button onclick="saveData()">Save All Data</button>
+            <button onclick="showColumnManager()">Manage Columns</button>
+        </div>
+        
+        <!-- Column Manager (Admin Only) -->
+        <div id="column-manager" class="admin-only hidden" style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+            <h3>Manage Columns</h3>
+            <div id="column-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <!-- Columns will be listed here -->
+            </div>
+            <button onclick="saveColumnChanges()" style="margin-top: 10px;">Save Changes</button>
+            <button onclick="hideColumnManager()">Cancel</button>
         </div>
         
         <!-- Add Project Form (Admin Only) -->
@@ -211,6 +224,7 @@ const SAMPLE_DATA = [
 // Initialize application
 let columns = [];
 let projects = [];
+let draggedColumn = null;
 
 // Check if logged in on page load
 if(localStorage.getItem("loggedIn")) {
@@ -228,6 +242,7 @@ function initApp(role) {
     renderTableHeader();
     renderFormFields();
     updateProjectFilter();
+    setupColumnDragAndDrop();
 }
 
 // Login function
@@ -307,16 +322,29 @@ function renderTableHeader() {
     columns.forEach(col => {
         const th = document.createElement("th");
         th.textContent = col.title;
+        th.setAttribute("data-column-id", col.id);
+        th.draggable = localStorage.getItem("userRole") === "admin";
         
-        if(localStorage.getItem("userRole") === "admin" && !DEFAULT_COLUMNS.some(c => c.id === col.id)) {
-            const removeBtn = document.createElement("span");
-            removeBtn.className = "remove-col";
-            removeBtn.innerHTML = "×";
-            removeBtn.onclick = (e) => {
+        if(localStorage.getItem("userRole") === "admin") {
+            const editBtn = document.createElement("span");
+            editBtn.className = "column-edit";
+            editBtn.innerHTML = "✏️";
+            editBtn.onclick = (e) => {
                 e.stopPropagation();
-                removeColumn(col.id);
+                editColumnName(col.id);
             };
-            th.appendChild(removeBtn);
+            th.appendChild(editBtn);
+            
+            if(!DEFAULT_COLUMNS.some(c => c.id === col.id)) {
+                const removeBtn = document.createElement("span");
+                removeBtn.className = "remove-col";
+                removeBtn.innerHTML = "×";
+                removeBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    removeColumn(col.id);
+                };
+                th.appendChild(removeBtn);
+            }
         }
         
         headerRow.appendChild(th);
@@ -327,6 +355,113 @@ function renderTableHeader() {
         actionTh.textContent = "Actions";
         headerRow.appendChild(actionTh);
     }
+}
+
+// Setup drag and drop for columns
+function setupColumnDragAndDrop() {
+    const headerRow = document.getElementById("table-header");
+    if(!headerRow) return;
+    
+    headerRow.querySelectorAll("th").forEach(th => {
+        th.addEventListener("dragstart", (e) => {
+            draggedColumn = e.target;
+            e.target.classList.add("dragging");
+            e.dataTransfer.setData("text/plain", e.target.getAttribute("data-column-id"));
+        });
+        
+        th.addEventListener("dragend", () => {
+            draggedColumn.classList.remove("dragging");
+            draggedColumn = null;
+        });
+        
+        th.addEventListener("dragover", (e) => {
+            e.preventDefault();
+        });
+        
+        th.addEventListener("drop", (e) => {
+            e.preventDefault();
+            if(draggedColumn && e.target !== draggedColumn && e.target.tagName === "TH") {
+                const draggedId = draggedColumn.getAttribute("data-column-id");
+                const targetId = e.target.getAttribute("data-column-id");
+                
+                if(draggedId && targetId) {
+                    const draggedIndex = columns.findIndex(c => c.id === draggedId);
+                    const targetIndex = columns.findIndex(c => c.id === targetId);
+                    
+                    if(draggedIndex >= 0 && targetIndex >= 0) {
+                        // Move column in array
+                        const [movedColumn] = columns.splice(draggedIndex, 1);
+                        columns.splice(targetIndex, 0, movedColumn);
+                        
+                        // Save and re-render
+                        localStorage.setItem("columns", JSON.stringify(columns));
+                        renderTableHeader();
+                        loadProjects();
+                        renderFormFields();
+                    }
+                }
+            }
+        });
+    });
+}
+
+// Edit column name
+function editColumnName(columnId) {
+    const column = columns.find(c => c.id === columnId);
+    if(!column) return;
+    
+    const newName = prompt("Edit column name:", column.title);
+    if(newName && newName !== column.title) {
+        column.title = newName;
+        localStorage.setItem("columns", JSON.stringify(columns));
+        renderTableHeader();
+        renderFormFields();
+        loadProjects();
+    }
+}
+
+// Show column manager
+function showColumnManager() {
+    const columnList = document.getElementById("column-list");
+    columnList.innerHTML = "";
+    
+    columns.forEach(col => {
+        const div = document.createElement("div");
+        div.className = "checkbox-label";
+        div.innerHTML = `
+            <input type="checkbox" id="col-${col.id}" checked disabled>
+            <label for="col-${col.id}">${col.title}</label>
+            <input type="text" value="${col.title}" id="edit-col-${col.id}" style="flex-grow:1;">
+            <button onclick="updateColumnName('${col.id}')">Update</button>
+        `;
+        columnList.appendChild(div);
+    });
+    
+    document.getElementById("column-manager").classList.remove("hidden");
+}
+
+// Hide column manager
+function hideColumnManager() {
+    document.getElementById("column-manager").classList.add("hidden");
+}
+
+// Update column name from manager
+function updateColumnName(columnId) {
+    const newName = document.getElementById(`edit-col-${columnId}`).value;
+    const column = columns.find(c => c.id === columnId);
+    
+    if(column && newName && newName !== column.title) {
+        column.title = newName;
+    }
+}
+
+// Save column changes from manager
+function saveColumnChanges() {
+    localStorage.setItem("columns", JSON.stringify(columns));
+    hideColumnManager();
+    renderTableHeader();
+    renderFormFields();
+    loadProjects();
 }
 
 // Render form fields
@@ -396,6 +531,7 @@ function loadProjects() {
     });
     
     updateProjectFilter();
+    setupColumnDragAndDrop();
 }
 
 // Get status display text
