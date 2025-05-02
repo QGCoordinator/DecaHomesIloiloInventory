@@ -402,6 +402,13 @@
                         <option value="sold">Sold</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label>Hide from Users</label>
+                    <select id="form-hidden">
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
+                    </select>
+                </div>
             </div>
             
             <div class="form-actions">
@@ -818,6 +825,7 @@ function editEntry(index) {
     document.getElementById("form-ma-rcbc").value = entry.maRcbc || '';
     document.getElementById("form-gmi-rcbc").value = entry.gmiRcbc || '';
     document.getElementById("form-status").value = entry.status || 'available';
+    document.getElementById("form-hidden").value = entry.hiddenFromUsers ? 'true' : 'false';
     
     document.getElementById("edit-index").value = index;
     document.getElementById("add-form").style.display = "block";
@@ -851,7 +859,7 @@ function saveEntry() {
         maRcbc: parseFloat(document.getElementById("form-ma-rcbc").value) || 0,
         gmiRcbc: parseFloat(document.getElementById("form-gmi-rcbc").value) || 0,
         status: document.getElementById("form-status").value,
-        hiddenFromUsers: inventory[index] ? inventory[index].hiddenFromUsers : false
+        hiddenFromUsers: document.getElementById("form-hidden").value === 'true'
     };
     
     if(!entry.project || !entry.site || !entry.unitType) {
@@ -860,8 +868,10 @@ function saveEntry() {
     }
     
     if(index >= 0) {
+        // Editing existing entry
         inventory[index] = entry;
     } else {
+        // Adding new entry
         inventory.push(entry);
     }
     
@@ -879,12 +889,23 @@ function deleteEntry(index) {
 }
 
 function duplicateEntry(index) {
+    if (index === undefined) {
+        // If called from button without parameter, get the current edit index
+        index = parseInt(document.getElementById("edit-index").value);
+        if (index < 0) return;
+    }
+    
     const entry = JSON.parse(JSON.stringify(inventory[index]));
     // Modify the duplicate to make it unique
     entry.lt = (parseInt(entry.lt) + 1).toString();
+    entry.hiddenFromUsers = false; // Reset hidden status for new entry
+    
     inventory.push(entry);
     localStorage.setItem("inventory", JSON.stringify(inventory));
     loadInventory();
+    
+    // Keep the form open with the new duplicated entry
+    editEntry(inventory.length - 1);
 }
 
 function cancelEdit() {
@@ -899,6 +920,9 @@ function clearForm() {
             input.value = "";
         }
     });
+    // Set default values
+    document.getElementById("form-status").value = "available";
+    document.getElementById("form-hidden").value = "false";
 }
 
 function formatNumber(num) {
@@ -914,14 +938,15 @@ function saveData() {
 }
 
 function exportToCSV() {
-    let csv = "Project,Site,Unit Type,Blk,Lt,Lot Area,House Type,Contract Price,PC1,PC2,TOO,DP,Reservation Fee,Equity Promo,Equity Payment,Term,Monthly Equity,Loan Amount,MA (HDMF),GMI (HDMF),MA (BDO),GMI (BDO),MA (RCBC),GMI (RCBC),Status\n";
+    let csv = "Project,Site,Unit Type,Blk,Lt,Lot Area,House Type,Contract Price,PC1,PC2,TOO,DP,Reservation Fee,Equity Promo,Equity Payment,Term,Monthly Equity,Loan Amount,MA (HDMF),GMI (HDMF),MA (BDO),GMI (BDO),MA (RCBC),GMI (RCBC),Status,Hidden From Users\n";
     
     inventory.forEach(entry => {
         csv += `"${entry.project || ''}","${entry.site || ''}","${entry.unitType || ''}","${entry.block || ''}","${entry.lt || ''}",`;
         csv += `"${entry.lotArea || ''}","${entry.houseType || ''}","${entry.contractPrice || ''}","${entry.pc1 || ''}","${entry.pc2 || ''}",`;
         csv += `"${entry.too || ''}","${entry.dp || ''}","${entry.reservationFee || ''}","${entry.equityPromo || ''}","${entry.equityPayment || ''}",`;
         csv += `"${entry.term || ''}","${entry.monthlyEquity || ''}","${entry.loanAmount || ''}","${entry.maHdmf || ''}","${entry.gmiHdmf || ''}",`;
-        csv += `"${entry.maBdo || ''}","${entry.gmiBdo || ''}","${entry.maRcbc || ''}","${entry.gmiRcbc || ''}","${entry.status || ''}"\n`;
+        csv += `"${entry.maBdo || ''}","${entry.gmiBdo || ''}","${entry.maRcbc || ''}","${entry.gmiRcbc || ''}","${entry.status || ''}",`;
+        csv += `"${entry.hiddenFromUsers ? 'Yes' : 'No'}"\n`;
     });
     
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
