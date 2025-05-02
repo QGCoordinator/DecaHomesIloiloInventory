@@ -258,6 +258,17 @@
         .error-message {
             color: #f44336;
         }
+        
+        /* User Management Styles */
+        .role-admin {
+            background-color: #e3f2fd;
+        }
+        .role-user {
+            background-color: #e8f5e9;
+        }
+        .password-field {
+            font-family: monospace;
+        }
     </style>
 </head>
 <body>
@@ -285,6 +296,7 @@
         <button class="tab" onclick="switchTab('calculator-tab')">Loan Calculator</button>
         <button class="tab" onclick="switchTab('bulletin-tab')">Sold Units</button>
         <button id="sales-tab-btn" class="tab admin-only" onclick="switchTab('sales-tab')">Sales Report</button>
+        <button id="users-tab-btn" class="tab admin-only" onclick="switchTab('users-tab')">User Management</button>
     </div>
     
     <!-- Projects Tab -->
@@ -613,24 +625,74 @@
             </div>
         </div>
     </div>
+    
+    <!-- User Management Tab -->
+    <div id="users-tab" class="tab-content">
+        <div style="background: #e3f2fd; padding: 15px; border-radius: 5px;">
+            <h3>User Management</h3>
+            
+            <div id="user-form" class="form-container">
+                <h4>Add/Edit User</h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Username:</label>
+                        <input type="text" id="user-username" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password:</label>
+                        <input type="password" id="user-password" class="password-field" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Role:</label>
+                        <select id="user-role" required>
+                            <option value="user">Regular User</option>
+                            <option value="admin">Administrator</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button onclick="saveUser()" class="btn btn-edit">Save</button>
+                    <button onclick="cancelUserEdit()" class="btn btn-delete">Cancel</button>
+                </div>
+                <input type="hidden" id="user-edit-index" value="-1">
+            </div>
+            
+            <table style="margin-top: 20px;">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Password</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="users-list">
+                    <!-- Users will be listed here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <script>
 // Admin credentials
 const ADMIN = {
     username: "admin",
-    password: "DecaHomesIloiloUm6"
+    password: "DecaHomesIloiloUm6",
+    role: "admin"
 };
 
 // Regular user credentials
-const USERS = [
+let USERS = [
     {
         username: "user",
-        password: "user123"
+        password: "user123",
+        role: "user"
     },
     {
         username: "agent",
-        password: "agent456"
+        password: "agent456",
+        role: "user"
     }
 ];
 
@@ -683,10 +745,20 @@ function login() {
         return;
     }
     
+    // Load users from localStorage if available
+    if(localStorage.getItem("users")) {
+        const storedUsers = JSON.parse(localStorage.getItem("users"));
+        if(storedUsers.length > 0) {
+            USERS = storedUsers;
+        }
+    }
+    
+    // Check admin credentials
     if(username === ADMIN.username && password === ADMIN.password) {
         // Admin login
         localStorage.setItem("loggedIn", "true");
         localStorage.setItem("userRole", "admin");
+        localStorage.setItem("currentUser", JSON.stringify(ADMIN));
         showContent("admin");
         return;
     }
@@ -699,8 +771,9 @@ function login() {
     if(validUser) {
         // Regular user login
         localStorage.setItem("loggedIn", "true");
-        localStorage.setItem("userRole", "user");
-        showContent("user");
+        localStorage.setItem("userRole", validUser.role);
+        localStorage.setItem("currentUser", JSON.stringify(validUser));
+        showContent(validUser.role);
         return;
     }
     
@@ -719,18 +792,21 @@ function showContent(role) {
     } else {
         document.querySelectorAll(".admin-only").forEach(el => el.style.display = "none");
         document.getElementById("sales-tab-btn").style.display = "none";
+        document.getElementById("users-tab-btn").style.display = "none";
     }
     
     // Load all data
     loadInventory();
     renderBulletin();
     renderSalesReport();
+    renderUsersList();
 }
 
 // Logout function
 function logout() {
     localStorage.removeItem("loggedIn");
     localStorage.removeItem("userRole");
+    localStorage.removeItem("currentUser");
     document.getElementById("login-section").style.display = "block";
     document.getElementById("content-section").style.display = "none";
 }
@@ -1021,6 +1097,7 @@ function saveData() {
     localStorage.setItem("inventory", JSON.stringify(inventory));
     localStorage.setItem("bulletinEntries", JSON.stringify(bulletinEntries));
     localStorage.setItem("salesData", JSON.stringify(salesData));
+    localStorage.setItem("users", JSON.stringify(USERS));
     showMessage("All data saved successfully", "success");
 }
 
@@ -1261,6 +1338,103 @@ function clearSalesForm() {
     document.getElementById("sales-edit-index").value = "-1";
 }
 
+// User Management Functions
+function renderUsersList() {
+    if(localStorage.getItem("users")) {
+        USERS = JSON.parse(localStorage.getItem("users"));
+    }
+    
+    const list = document.getElementById("users-list");
+    list.innerHTML = "";
+    
+    // Add admin user to the list (but don't allow editing it)
+    const adminRow = list.insertRow();
+    adminRow.classList.add("role-admin");
+    adminRow.innerHTML = `
+        <td>${ADMIN.username}</td>
+        <td>********</td>
+        <td>Administrator</td>
+        <td>System Account</td>
+    `;
+    
+    // Add regular users
+    USERS.forEach((user, index) => {
+        const row = list.insertRow();
+        row.classList.add(user.role === "admin" ? "role-admin" : "role-user");
+        row.innerHTML = `
+            <td>${user.username}</td>
+            <td class="password-field">${user.password}</td>
+            <td>${user.role === "admin" ? "Administrator" : "Regular User"}</td>
+            <td>
+                <button onclick="editUser(${index})" class="btn btn-edit">Edit</button>
+                <button onclick="deleteUser(${index})" class="btn btn-delete">Delete</button>
+            </td>
+        `;
+    });
+}
+
+function saveUser() {
+    const username = document.getElementById("user-username").value.trim();
+    const password = document.getElementById("user-password").value.trim();
+    const role = document.getElementById("user-role").value;
+    const editIndex = parseInt(document.getElementById("user-edit-index").value);
+    
+    if(!username || !password) {
+        showMessage("Please fill all fields", "error");
+        return;
+    }
+    
+    // Check for duplicate username (except when editing the same user)
+    const isDuplicate = USERS.some((user, index) => {
+        return user.username === username && index !== editIndex;
+    });
+    
+    if(isDuplicate) {
+        showMessage("Username already exists", "error");
+        return;
+    }
+    
+    const user = { username, password, role };
+    
+    if(editIndex >= 0) {
+        USERS[editIndex] = user;
+    } else {
+        USERS.push(user);
+    }
+    
+    localStorage.setItem("users", JSON.stringify(USERS));
+    renderUsersList();
+    clearUserForm();
+    showMessage("User saved successfully", "success");
+}
+
+function editUser(index) {
+    const user = USERS[index];
+    document.getElementById("user-username").value = user.username;
+    document.getElementById("user-password").value = user.password;
+    document.getElementById("user-role").value = user.role;
+    document.getElementById("user-edit-index").value = index;
+}
+
+function deleteUser(index) {
+    if(confirm("Delete this user?")) {
+        USERS.splice(index, 1);
+        localStorage.setItem("users", JSON.stringify(USERS));
+        renderUsersList();
+    }
+}
+
+function cancelUserEdit() {
+    clearUserForm();
+}
+
+function clearUserForm() {
+    document.getElementById("user-username").value = "";
+    document.getElementById("user-password").value = "";
+    document.getElementById("user-role").value = "user";
+    document.getElementById("user-edit-index").value = "-1";
+}
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     if(localStorage.getItem("loggedIn")) {
@@ -1272,6 +1446,20 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Set today's date in bulletin form
     document.getElementById("bulletin-date").value = new Date().toISOString().split('T')[0];
+    
+    // Initialize localStorage data if not exists
+    if(!localStorage.getItem("inventory")) {
+        localStorage.setItem("inventory", JSON.stringify(inventory));
+    }
+    if(!localStorage.getItem("bulletinEntries")) {
+        localStorage.setItem("bulletinEntries", JSON.stringify(bulletinEntries));
+    }
+    if(!localStorage.getItem("salesData")) {
+        localStorage.setItem("salesData", JSON.stringify(salesData));
+    }
+    if(!localStorage.getItem("users")) {
+        localStorage.setItem("users", JSON.stringify(USERS));
+    }
 });
 </script>
 </body>
