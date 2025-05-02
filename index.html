@@ -525,92 +525,219 @@
             <input type="hidden" id="edit-index" value="-1">
         </div>
         
-        <!-- Manage Entries Section -->
-        <div id="manage-entries" class="admin-only hidden">
-            <h3>Manage Inventory Entries</h3>
-            <div class="manage-entries-container">
-                <div class="entries-list" id="entries-list">
-                    <!-- Entries will be listed here -->
-                </div>
-                <div class="entry-details" id="entry-details">
-                    <p>Select an entry from the list to view and edit details</p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Inventory Table -->
-        <div style="overflow-x: auto;">
-            <table id="inventory-table">
-                <thead>
-                    <tr>
-                        <th>Project</th>
-                        <th>Site</th>
-                        <th>Unit Type</th>
-                        <th>Blk</th>
-                        <th>Lt</th>
-                        <th>Lot Area</th>
-                        <th>House Type</th>
-                        <th>Contract Price</th>
-                        <th>PC1</th>
-                        <th>PC2</th>
-                        <th>TOO</th>
-                        <th>DP</th>
-                        <th>Reservation Fee</th>
-                        <th>Equity Promo</th>
-                        <th>Equity Payment</th>
-                        <th>Term</th>
-                        <th>Monthly Equity</th>
-                        <th>Loan Amount</th>
-                        <th>MA (HDMF)</th>
-                        <th>GMI (HDMF)</th>
-                        <th>MA (BDO)</th>
-                        <th>GMI (BDO)</th>
-                        <th>MA (RCBC)</th>
-                        <th>GMI (RCBC)</th>
-                        <th>Status</th>
-                        <th class="admin-only">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Data will be loaded here -->
-                </tbody>
-            </table>
-        </div>
-    </div>
+       <!-- In the Projects Tab section, update the showEntryDetails function in the script -->
+<script>
+// Update the showEntryDetails function to show all editable fields
+function showEntryDetails(index) {
+    const entry = inventory[index];
+    const detailsContainer = document.getElementById("entry-details");
     
-    <!-- Calculator Tab -->
-    <div id="calculator-tab" class="tab-content">
-        <div class="calculator-container">
-            <h3>Loan Calculator</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+    // Highlight selected item
+    document.querySelectorAll(".entry-item").forEach(item => {
+        item.classList.remove("active");
+    });
+    document.querySelectorAll(".entry-item")[index].classList.add("active");
+    
+    detailsContainer.innerHTML = `
+        <h4>Edit Entry: ${entry.project} ${entry.block}-${entry.lt}</h4>
+        <form id="entry-details-form" class="compact-form">
+            <div class="form-row">
                 <div class="form-group">
-                    <label>Loan Amount:</label>
-                    <input type="number" id="loan-amount">
+                    <label>Project</label>
+                    <input type="text" id="manage-project" value="${entry.project || ''}" required>
                 </div>
                 <div class="form-group">
-                    <label>Interest Rate (%):</label>
-                    <input type="number" id="interest-rate" step="0.01">
+                    <label>Site</label>
+                    <input type="text" id="manage-site" value="${entry.site || ''}" required>
                 </div>
                 <div class="form-group">
-                    <label>Loan Term (years):</label>
-                    <input type="number" id="loan-term">
-                </div>
-                <div class="form-group">
-                    <label>Income Requirement (%):</label>
-                    <input type="number" id="income-percent" value="30">
+                    <label>Unit Type</label>
+                    <input type="text" id="manage-unit-type" value="${entry.unitType || ''}" required>
                 </div>
             </div>
-            <button onclick="calculateLoan()" class="btn" style="margin-top: 10px;">Calculate</button>
             
-            <div id="calculator-results" class="calculator-results">
-                <h4>Calculation Results</h4>
-                <p>Monthly Amortization: <span id="monthly-amortization"></span></p>
-                <p>Total Interest: <span id="total-interest"></span></p>
-                <p>Total Payment: <span id="total-payment"></span></p>
-                <p>Required Monthly Income: <span id="required-income"></span></p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Block</label>
+                    <input type="text" id="manage-block" value="${entry.block || ''}" required>
+                </div>
+                <div class="form-group">
+                    <label>Lot</label>
+                    <input type="text" id="manage-lt" value="${entry.lt || ''}" required>
+                </div>
+                <div class="form-group">
+                    <label>Lot Area (sqm)</label>
+                    <input type="number" id="manage-lot-area" value="${entry.lotArea || ''}">
+                </div>
             </div>
-        </div>
-    </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>House Type</label>
+                    <input type="text" id="manage-house-type" value="${entry.houseType || ''}">
+                </div>
+                <div class="form-group">
+                    <label>Contract Price</label>
+                    <input type="number" id="manage-contract-price" value="${entry.contractPrice || ''}">
+                </div>
+                <div class="form-group">
+                    <label>PC1</label>
+                    <input type="number" id="manage-pc1" value="${entry.pc1 || ''}">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>PC2</label>
+                    <input type="number" id="manage-pc2" value="${entry.pc2 || ''}">
+                </div>
+                <div class="form-group">
+                    <label>TOO</label>
+                    <input type="number" id="manage-too" value="${entry.too || ''}">
+                </div>
+                <div class="form-group">
+                    <label>DP</label>
+                    <input type="number" id="manage-dp" value="${entry.dp || ''}">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Reservation Fee</label>
+                    <input type="number" id="manage-reservation-fee" value="${entry.reservationFee || ''}">
+                </div>
+                <div class="form-group">
+                    <label>Equity Promo</label>
+                    <input type="number" id="manage-equity-promo" value="${entry.equityPromo || ''}">
+                </div>
+                <div class="form-group">
+                    <label>Equity Payment</label>
+                    <input type="number" id="manage-equity-payment" value="${entry.equityPayment || ''}">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Term (months)</label>
+                    <input type="number" id="manage-term" value="${entry.term || ''}">
+                </div>
+                <div class="form-group">
+                    <label>Monthly Equity</label>
+                    <input type="number" id="manage-monthly-equity" value="${entry.monthlyEquity || ''}">
+                </div>
+                <div class="form-group">
+                    <label>Loan Amount</label>
+                    <input type="number" id="manage-loan-amount" value="${entry.loanAmount || ''}">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>MA (HDMF)</label>
+                    <input type="number" id="manage-ma-hdmf" value="${entry.maHdmf || ''}">
+                </div>
+                <div class="form-group">
+                    <label>GMI (HDMF)</label>
+                    <input type="number" id="manage-gmi-hdmf" value="${entry.gmiHdmf || ''}">
+                </div>
+                <div class="form-group">
+                    <label>MA (BDO)</label>
+                    <input type="number" id="manage-ma-bdo" value="${entry.maBdo || ''}">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>GMI (BDO)</label>
+                    <input type="number" id="manage-gmi-bdo" value="${entry.gmiBdo || ''}">
+                </div>
+                <div class="form-group">
+                    <label>MA (RCBC)</label>
+                    <input type="number" id="manage-ma-rcbc" value="${entry.maRcbc || ''}">
+                </div>
+                <div class="form-group">
+                    <label>GMI (RCBC)</label>
+                    <input type="number" id="manage-gmi-rcbc" value="${entry.gmiRcbc || ''}">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="manage-status">
+                        <option value="available" ${entry.status === 'available' ? 'selected' : ''}>Available</option>
+                        <option value="with-folder" ${entry.status === 'with-folder' ? 'selected' : ''}>With Folder</option>
+                        <option value="sold" ${entry.status === 'sold' ? 'selected' : ''}>Sold</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Hide from Users</label>
+                    <select id="manage-hidden">
+                        <option value="false" ${!entry.hiddenFromUsers ? 'selected' : ''}>No</option>
+                        <option value="true" ${entry.hiddenFromUsers ? 'selected' : ''}>Yes</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" onclick="saveManagedEntry(${index})" class="btn btn-edit">Save Changes</button>
+                <button type="button" onclick="confirmDeleteEntry(${index})" class="btn btn-delete">Delete Entry</button>
+                <button type="button" onclick="duplicateEntry(${index})" class="btn btn-duplicate">Duplicate Entry</button>
+            </div>
+            
+            <div id="manage-message" class="temp-message" style="margin-top: 15px;"></div>
+        </form>
+    `;
+}
+
+// Update the saveManagedEntry function to handle all fields
+function saveManagedEntry(index) {
+    const entry = inventory[index];
+    const messageElement = document.getElementById("manage-message");
+    
+    // Validate required fields
+    const requiredFields = ['project', 'site', 'unit-type', 'block', 'lt'];
+    for (const field of requiredFields) {
+        const value = document.getElementById(`manage-${field}`).value.trim();
+        if (!value) {
+            showManageMessage(`Please fill in the ${field.replace('-', ' ')} field`, 'error');
+            return;
+        }
+    }
+
+    // Update all entry fields
+    entry.project = document.getElementById("manage-project").value.trim();
+    entry.site = document.getElementById("manage-site").value.trim();
+    entry.unitType = document.getElementById("manage-unit-type").value.trim();
+    entry.block = document.getElementById("manage-block").value.trim();
+    entry.lt = document.getElementById("manage-lt").value.trim();
+    entry.lotArea = parseFloat(document.getElementById("manage-lot-area").value) || 0;
+    entry.houseType = document.getElementById("manage-house-type").value.trim();
+    entry.contractPrice = parseFloat(document.getElementById("manage-contract-price").value) || 0;
+    entry.pc1 = parseFloat(document.getElementById("manage-pc1").value) || 0;
+    entry.pc2 = parseFloat(document.getElementById("manage-pc2").value) || 0;
+    entry.too = parseFloat(document.getElementById("manage-too").value) || 0;
+    entry.dp = parseFloat(document.getElementById("manage-dp").value) || 0;
+    entry.reservationFee = parseFloat(document.getElementById("manage-reservation-fee").value) || 0;
+    entry.equityPromo = parseFloat(document.getElementById("manage-equity-promo").value) || 0;
+    entry.equityPayment = parseFloat(document.getElementById("manage-equity-payment").value) || 0;
+    entry.term = parseInt(document.getElementById("manage-term").value) || 0;
+    entry.monthlyEquity = parseFloat(document.getElementById("manage-monthly-equity").value) || 0;
+    entry.loanAmount = parseFloat(document.getElementById("manage-loan-amount").value) || 0;
+    entry.maHdmf = parseFloat(document.getElementById("manage-ma-hdmf").value) || 0;
+    entry.gmiHdmf = parseFloat(document.getElementById("manage-gmi-hdmf").value) || 0;
+    entry.maBdo = parseFloat(document.getElementById("manage-ma-bdo").value) || 0;
+    entry.gmiBdo = parseFloat(document.getElementById("manage-gmi-bdo").value) || 0;
+    entry.maRcbc = parseFloat(document.getElementById("manage-ma-rcbc").value) || 0;
+    entry.gmiRcbc = parseFloat(document.getElementById("manage-gmi-rcbc").value) || 0;
+    entry.status = document.getElementById("manage-status").value;
+    entry.hiddenFromUsers = document.getElementById("manage-hidden").value === 'true';
+    
+    localStorage.setItem("inventory", JSON.stringify(inventory));
+    loadInventory();
+    showManageMessage('Entry updated successfully!', 'success');
+}
+</script>
     
     <!-- Sold Units Bulletin Tab -->
     <div id="bulletin-tab" class="tab-content">
