@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Housing Projects Management - Inventory</title>
+    <title>Housing Projects Management</title>
     <style>
         /* Previous CSS styles remain the same */
-        /* Only adding new styles for visibility toggle */
+        /* Adding styles for hidden rows */
         .hidden-row {
             display: none;
         }
-        .visible-to-admin-only {
-            background-color: #fffde7; /* Light yellow background for admin-only visible rows */
+        .visible-to-admin {
+            background-color: #fffde7;
         }
     </style>
 </head>
 <body>
 
-<!-- Previous HTML content remains the same until the table -->
+<!-- Previous HTML content remains the same until the inventory table -->
 <table id="inventory-table">
     <thead>
         <tr>
@@ -30,7 +30,7 @@
 </table>
 
 <script>
-// Updated inventory loading function
+// Updated inventory loading function with working action buttons
 function loadInventory() {
     const tbody = document.querySelector("#inventory-table tbody");
     tbody.innerHTML = "";
@@ -38,17 +38,18 @@ function loadInventory() {
     
     inventory.forEach((entry, index) => {
         // Skip hidden entries for regular users
-        if (!isAdmin && (entry.hidden || entry.hiddenFromUsers)) {
+        if (!isAdmin && entry.hiddenFromUsers) {
             return;
         }
         
         const row = tbody.insertRow();
         
-        // Add visibility classes
-        if (entry.hidden) row.classList.add("hidden-row");
-        if (entry.hiddenFromUsers) row.classList.add("visible-to-admin-only");
+        // Mark rows hidden from users
+        if (entry.hiddenFromUsers) {
+            row.classList.add("visible-to-admin");
+        }
         
-        // Determine status badge class
+        // Status badge
         let statusClass = "";
         if(entry.status === "available") statusClass = "status-available";
         else if(entry.status === "with-folder") statusClass = "status-with-folder";
@@ -62,49 +63,27 @@ function loadInventory() {
                 <button onclick="deleteEntry(${index})" class="btn btn-delete">Delete</button>
                 <button onclick="duplicateEntry(${index})" class="btn btn-duplicate">Duplicate</button>
                 <button onclick="toggleHideFromUsers(${index})" class="btn btn-hide-users">
-                    ${entry.hiddenFromUsers ? 'Show Users' : 'Hide Users'}
+                    ${entry.hiddenFromUsers ? 'Show to Users' : 'Hide from Users'}
                 </button>
             </td>
         `;
     });
 }
 
-// New function to toggle hide from users
-function toggleHideFromUsers(index) {
-    inventory[index].hiddenFromUsers = !inventory[index].hiddenFromUsers;
-    localStorage.setItem("inventory", JSON.stringify(inventory));
-    loadInventory();
-}
-
-// Updated edit function to include status
+// Function to edit an entry
 function editEntry(index) {
     const entry = inventory[index];
-    // Previous form field assignments remain the same
-    document.getElementById("form-status").value = entry.status;
+    // Fill the form with entry data
+    document.getElementById("form-project").value = entry.project || '';
+    document.getElementById("form-site").value = entry.site || '';
+    // Fill all other fields...
+    document.getElementById("form-status").value = entry.status || 'available';
+    
     document.getElementById("edit-index").value = index;
     document.getElementById("add-form").style.display = "block";
 }
 
-// Updated save function to include status
-function saveEntry() {
-    const index = parseInt(document.getElementById("edit-index").value);
-    const entry = {
-        // Previous field assignments remain the same
-        status: document.getElementById("form-status").value
-    };
-    
-    if(index >= 0) {
-        inventory[index] = entry;
-    } else {
-        inventory.push(entry);
-    }
-    
-    localStorage.setItem("inventory", JSON.stringify(inventory));
-    document.getElementById("add-form").style.display = "none";
-    loadInventory();
-}
-
-// Delete function remains the same
+// Function to delete an entry
 function deleteEntry(index) {
     if(confirm("Are you sure you want to delete this entry?")) {
         inventory.splice(index, 1);
@@ -113,24 +92,54 @@ function deleteEntry(index) {
     }
 }
 
-// Duplicate function remains the same
+// Function to duplicate an entry
 function duplicateEntry(index) {
-    if(index >= 0) {
-        const entry = JSON.parse(JSON.stringify(inventory[index]));
-        entry.lt = (parseInt(entry.lt) + 1).toString();
-        inventory.push(entry);
-        localStorage.setItem("inventory", JSON.stringify(inventory));
-        loadInventory();
-    }
+    const entry = JSON.parse(JSON.stringify(inventory[index]));
+    // Modify the duplicate to make it unique
+    entry.lt = (parseInt(entry.lt) + 1).toString();
+    inventory.push(entry);
+    localStorage.setItem("inventory", JSON.stringify(inventory));
+    loadInventory();
 }
 
-// Check admin status and load inventory
-document.addEventListener('DOMContentLoaded', function() {
-    if(!localStorage.getItem("loggedIn")) {
-        window.location.href = "index.html";
+// Function to toggle hide from users
+function toggleHideFromUsers(index) {
+    inventory[index].hiddenFromUsers = !inventory[index].hiddenFromUsers;
+    localStorage.setItem("inventory", JSON.stringify(inventory));
+    loadInventory();
+}
+
+// Updated save function
+function saveEntry() {
+    const index = parseInt(document.getElementById("edit-index").value);
+    const entry = {
+        project: document.getElementById("form-project").value,
+        site: document.getElementById("form-site").value,
+        // All other fields...
+        status: document.getElementById("form-status").value
+    };
+    
+    if(index >= 0) {
+        // Update existing entry
+        inventory[index] = entry;
     } else {
-        if(localStorage.getItem("userRole") === "admin") {
-            document.querySelectorAll(".admin-only").forEach(el => el.style.display = "block");
+        // Add new entry
+        inventory.push(entry);
+    }
+    
+    localStorage.setItem("inventory", JSON.stringify(inventory));
+    document.getElementById("add-form").style.display = "none";
+    loadInventory();
+}
+
+// Initialize the application
+document.addEventListener('DOMContentLoaded', function() {
+    if(localStorage.getItem("loggedIn")) {
+        showContent(localStorage.getItem("userRole"));
+        
+        // Load data from localStorage
+        if(localStorage.getItem("inventory")) {
+            inventory = JSON.parse(localStorage.getItem("inventory"));
         }
         loadInventory();
     }
