@@ -3,7 +3,6 @@
 <head>
     <title>Housing Projects Management</title>
     <style>
-        /* All your original CSS styles remain exactly the same */
         /* Login Styles */
         .login-container {
             max-width: 350px;
@@ -517,227 +516,94 @@
             </div>
             
             <div class="form-actions">
-                <button onclick="saveEntry()" class="btn btn-edit">Save</button>
-                <button onclick="cancelEdit()" class="btn btn-delete">Cancel</button>
-                <button onclick="duplicateEntry()" class="btn btn-duplicate">Duplicate</button>
+                <button type="button" onclick="saveEntry()" class="btn btn-edit">Save</button>
+                <button type="button" onclick="cancelEdit()" class="btn btn-delete">Cancel</button>
+                <button type="button" onclick="duplicateEntry()" class="btn btn-duplicate">Duplicate</button>
             </div>
             
             <input type="hidden" id="edit-index" value="-1">
+            <div id="form-message" class="temp-message"></div>
         </div>
         
-       <!-- In the Projects Tab section, update the showEntryDetails function in the script -->
-<script>
-// Update the showEntryDetails function to show all editable fields
-function showEntryDetails(index) {
-    const entry = inventory[index];
-    const detailsContainer = document.getElementById("entry-details");
+        <!-- Inventory Table -->
+        <table id="inventory-table">
+            <thead>
+                <tr>
+                    <th>Project</th>
+                    <th>Site</th>
+                    <th>Unit Type</th>
+                    <th>Blk</th>
+                    <th>Lt</th>
+                    <th>Lot Area</th>
+                    <th>House Type</th>
+                    <th>Contract Price</th>
+                    <th>PC1</th>
+                    <th>PC2</th>
+                    <th>TOO</th>
+                    <th>DP</th>
+                    <th>Reservation</th>
+                    <th>Equity Promo</th>
+                    <th>Equity Payment</th>
+                    <th>Term</th>
+                    <th>Monthly Equity</th>
+                    <th>Loan Amount</th>
+                    <th>MA (HDMF)</th>
+                    <th>GMI (HDMF)</th>
+                    <th>MA (BDO)</th>
+                    <th>GMI (BDO)</th>
+                    <th>MA (RCBC)</th>
+                    <th>GMI (RCBC)</th>
+                    <th>Status</th>
+                    <th class="admin-only">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Inventory data will be loaded here -->
+            </tbody>
+        </table>
+        
+        <!-- Manage Entries Section -->
+        <div id="manage-entries" class="admin-only hidden">
+            <h3>Manage Inventory Entries</h3>
+            <div class="manage-entries-container">
+                <div class="entries-list" id="entries-list">
+                    <!-- Entries list will be loaded here -->
+                </div>
+                <div class="entry-details" id="entry-details">
+                    <p>Select an entry from the list to view and edit details</p>
+                </div>
+            </div>
+        </div>
+    </div>
     
-    // Highlight selected item
-    document.querySelectorAll(".entry-item").forEach(item => {
-        item.classList.remove("active");
-    });
-    document.querySelectorAll(".entry-item")[index].classList.add("active");
-    
-    detailsContainer.innerHTML = `
-        <h4>Edit Entry: ${entry.project} ${entry.block}-${entry.lt}</h4>
-        <form id="entry-details-form" class="compact-form">
+    <!-- Calculator Tab -->
+    <div id="calculator-tab" class="tab-content">
+        <div class="calculator-container">
+            <h3>Loan Calculator</h3>
             <div class="form-row">
-                <div class="form-group">
-                    <label>Project</label>
-                    <input type="text" id="manage-project" value="${entry.project || ''}" required>
-                </div>
-                <div class="form-group">
-                    <label>Site</label>
-                    <input type="text" id="manage-site" value="${entry.site || ''}" required>
-                </div>
-                <div class="form-group">
-                    <label>Unit Type</label>
-                    <input type="text" id="manage-unit-type" value="${entry.unitType || ''}" required>
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Block</label>
-                    <input type="text" id="manage-block" value="${entry.block || ''}" required>
-                </div>
-                <div class="form-group">
-                    <label>Lot</label>
-                    <input type="text" id="manage-lt" value="${entry.lt || ''}" required>
-                </div>
-                <div class="form-group">
-                    <label>Lot Area (sqm)</label>
-                    <input type="number" id="manage-lot-area" value="${entry.lotArea || ''}">
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label>House Type</label>
-                    <input type="text" id="manage-house-type" value="${entry.houseType || ''}">
-                </div>
-                <div class="form-group">
-                    <label>Contract Price</label>
-                    <input type="number" id="manage-contract-price" value="${entry.contractPrice || ''}">
-                </div>
-                <div class="form-group">
-                    <label>PC1</label>
-                    <input type="number" id="manage-pc1" value="${entry.pc1 || ''}">
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label>PC2</label>
-                    <input type="number" id="manage-pc2" value="${entry.pc2 || ''}">
-                </div>
-                <div class="form-group">
-                    <label>TOO</label>
-                    <input type="number" id="manage-too" value="${entry.too || ''}">
-                </div>
-                <div class="form-group">
-                    <label>DP</label>
-                    <input type="number" id="manage-dp" value="${entry.dp || ''}">
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Reservation Fee</label>
-                    <input type="number" id="manage-reservation-fee" value="${entry.reservationFee || ''}">
-                </div>
-                <div class="form-group">
-                    <label>Equity Promo</label>
-                    <input type="number" id="manage-equity-promo" value="${entry.equityPromo || ''}">
-                </div>
-                <div class="form-group">
-                    <label>Equity Payment</label>
-                    <input type="number" id="manage-equity-payment" value="${entry.equityPayment || ''}">
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Term (months)</label>
-                    <input type="number" id="manage-term" value="${entry.term || ''}">
-                </div>
-                <div class="form-group">
-                    <label>Monthly Equity</label>
-                    <input type="number" id="manage-monthly-equity" value="${entry.monthlyEquity || ''}">
-                </div>
                 <div class="form-group">
                     <label>Loan Amount</label>
-                    <input type="number" id="manage-loan-amount" value="${entry.loanAmount || ''}">
+                    <input type="number" id="calc-loan-amount" placeholder="Enter loan amount">
+                </div>
+                <div class="form-group">
+                    <label>Interest Rate (%)</label>
+                    <input type="number" id="calc-interest-rate" placeholder="Enter interest rate" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>Loan Term (years)</label>
+                    <input type="number" id="calc-loan-term" placeholder="Enter loan term">
                 </div>
             </div>
+            <button onclick="calculateLoan()" class="btn btn-edit">Calculate</button>
             
-            <div class="form-row">
-                <div class="form-group">
-                    <label>MA (HDMF)</label>
-                    <input type="number" id="manage-ma-hdmf" value="${entry.maHdmf || ''}">
-                </div>
-                <div class="form-group">
-                    <label>GMI (HDMF)</label>
-                    <input type="number" id="manage-gmi-hdmf" value="${entry.gmiHdmf || ''}">
-                </div>
-                <div class="form-group">
-                    <label>MA (BDO)</label>
-                    <input type="number" id="manage-ma-bdo" value="${entry.maBdo || ''}">
-                </div>
+            <div id="calculator-results" class="calculator-results">
+                <h4>Calculation Results</h4>
+                <div id="calc-monthly-payment"></div>
+                <div id="calc-total-interest"></div>
+                <div id="calc-total-payment"></div>
             </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label>GMI (BDO)</label>
-                    <input type="number" id="manage-gmi-bdo" value="${entry.gmiBdo || ''}">
-                </div>
-                <div class="form-group">
-                    <label>MA (RCBC)</label>
-                    <input type="number" id="manage-ma-rcbc" value="${entry.maRcbc || ''}">
-                </div>
-                <div class="form-group">
-                    <label>GMI (RCBC)</label>
-                    <input type="number" id="manage-gmi-rcbc" value="${entry.gmiRcbc || ''}">
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Status</label>
-                    <select id="manage-status">
-                        <option value="available" ${entry.status === 'available' ? 'selected' : ''}>Available</option>
-                        <option value="with-folder" ${entry.status === 'with-folder' ? 'selected' : ''}>With Folder</option>
-                        <option value="sold" ${entry.status === 'sold' ? 'selected' : ''}>Sold</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Hide from Users</label>
-                    <select id="manage-hidden">
-                        <option value="false" ${!entry.hiddenFromUsers ? 'selected' : ''}>No</option>
-                        <option value="true" ${entry.hiddenFromUsers ? 'selected' : ''}>Yes</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="form-actions">
-                <button type="button" onclick="saveManagedEntry(${index})" class="btn btn-edit">Save Changes</button>
-                <button type="button" onclick="confirmDeleteEntry(${index})" class="btn btn-delete">Delete Entry</button>
-                <button type="button" onclick="duplicateEntry(${index})" class="btn btn-duplicate">Duplicate Entry</button>
-            </div>
-            
-            <div id="manage-message" class="temp-message" style="margin-top: 15px;"></div>
-        </form>
-    `;
-}
-
-// Update the saveManagedEntry function to handle all fields
-function saveManagedEntry(index) {
-    const entry = inventory[index];
-    const messageElement = document.getElementById("manage-message");
-    
-    // Validate required fields
-    const requiredFields = ['project', 'site', 'unit-type', 'block', 'lt'];
-    for (const field of requiredFields) {
-        const value = document.getElementById(`manage-${field}`).value.trim();
-        if (!value) {
-            showManageMessage(`Please fill in the ${field.replace('-', ' ')} field`, 'error');
-            return;
-        }
-    }
-
-    // Update all entry fields
-    entry.project = document.getElementById("manage-project").value.trim();
-    entry.site = document.getElementById("manage-site").value.trim();
-    entry.unitType = document.getElementById("manage-unit-type").value.trim();
-    entry.block = document.getElementById("manage-block").value.trim();
-    entry.lt = document.getElementById("manage-lt").value.trim();
-    entry.lotArea = parseFloat(document.getElementById("manage-lot-area").value) || 0;
-    entry.houseType = document.getElementById("manage-house-type").value.trim();
-    entry.contractPrice = parseFloat(document.getElementById("manage-contract-price").value) || 0;
-    entry.pc1 = parseFloat(document.getElementById("manage-pc1").value) || 0;
-    entry.pc2 = parseFloat(document.getElementById("manage-pc2").value) || 0;
-    entry.too = parseFloat(document.getElementById("manage-too").value) || 0;
-    entry.dp = parseFloat(document.getElementById("manage-dp").value) || 0;
-    entry.reservationFee = parseFloat(document.getElementById("manage-reservation-fee").value) || 0;
-    entry.equityPromo = parseFloat(document.getElementById("manage-equity-promo").value) || 0;
-    entry.equityPayment = parseFloat(document.getElementById("manage-equity-payment").value) || 0;
-    entry.term = parseInt(document.getElementById("manage-term").value) || 0;
-    entry.monthlyEquity = parseFloat(document.getElementById("manage-monthly-equity").value) || 0;
-    entry.loanAmount = parseFloat(document.getElementById("manage-loan-amount").value) || 0;
-    entry.maHdmf = parseFloat(document.getElementById("manage-ma-hdmf").value) || 0;
-    entry.gmiHdmf = parseFloat(document.getElementById("manage-gmi-hdmf").value) || 0;
-    entry.maBdo = parseFloat(document.getElementById("manage-ma-bdo").value) || 0;
-    entry.gmiBdo = parseFloat(document.getElementById("manage-gmi-bdo").value) || 0;
-    entry.maRcbc = parseFloat(document.getElementById("manage-ma-rcbc").value) || 0;
-    entry.gmiRcbc = parseFloat(document.getElementById("manage-gmi-rcbc").value) || 0;
-    entry.status = document.getElementById("manage-status").value;
-    entry.hiddenFromUsers = document.getElementById("manage-hidden").value === 'true';
-    
-    localStorage.setItem("inventory", JSON.stringify(inventory));
-    loadInventory();
-    showManageMessage('Entry updated successfully!', 'success');
-}
-</script>
+        </div>
+    </div>
     
     <!-- Sold Units Bulletin Tab -->
     <div id="bulletin-tab" class="tab-content">
@@ -1083,24 +949,226 @@ function loadInventory() {
             <td>${formatNumber(entry.gmiRcbc)}</td>
             <td><span class="status-badge ${statusClass}">${entry.status ? entry.status.replace('-', ' ') : ''}</span></td>
             <td class="admin-only">
-                <div class="btn-group">
-                    <button onclick="editEntry(${index})" class="btn btn-edit btn-sm">Edit</button>
-                    <button onclick="confirmDeleteEntry(${index})" class="btn btn-delete btn-sm">Delete</button>
-                    <button onclick="duplicateEntry(${index})" class="btn btn-duplicate btn-sm">Duplicate</button>
-                </div>
+                <button onclick="editEntry(${index})" class="btn btn-edit">Edit</button>
+                <button onclick="confirmDeleteEntry(${index})" class="btn btn-delete">Delete</button>
+                <button onclick="duplicateEntry(${index})" class="btn btn-duplicate">Duplicate</button>
             </td>
         `;
     });
 }
 
-// New function to show manage entries section
+// Format number with commas
+function formatNumber(num) {
+    if (!num) return '';
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+// Show add form
+function showAddForm() {
+    document.getElementById("add-form").style.display = "block";
+    document.getElementById("manage-entries").style.display = "none";
+    document.getElementById("edit-index").value = "-1";
+    clearForm();
+}
+
+// Clear form fields
+function clearForm() {
+    const formElements = document.querySelectorAll("#add-form input, #add-form select");
+    formElements.forEach(element => {
+        if (element.type !== "button" && element.type !== "submit" && element.id !== "edit-index") {
+            if (element.type === "select-one") {
+                element.selectedIndex = 0;
+            } else {
+                element.value = "";
+            }
+        }
+    });
+    document.getElementById("form-message").textContent = "";
+}
+
+// Edit entry
+function editEntry(index) {
+    const entry = inventory[index];
+    document.getElementById("edit-index").value = index;
+    
+    // Fill the form with entry data
+    document.getElementById("form-project").value = entry.project || "";
+    document.getElementById("form-site").value = entry.site || "";
+    document.getElementById("form-unit-type").value = entry.unitType || "";
+    document.getElementById("form-block").value = entry.block || "";
+    document.getElementById("form-lt").value = entry.lt || "";
+    document.getElementById("form-lot-area").value = entry.lotArea || "";
+    document.getElementById("form-house-type").value = entry.houseType || "";
+    document.getElementById("form-contract-price").value = entry.contractPrice || "";
+    document.getElementById("form-pc1").value = entry.pc1 || "";
+    document.getElementById("form-pc2").value = entry.pc2 || "";
+    document.getElementById("form-too").value = entry.too || "";
+    document.getElementById("form-dp").value = entry.dp || "";
+    document.getElementById("form-reservation-fee").value = entry.reservationFee || "";
+    document.getElementById("form-equity-promo").value = entry.equityPromo || "";
+    document.getElementById("form-equity-payment").value = entry.equityPayment || "";
+    document.getElementById("form-term").value = entry.term || "";
+    document.getElementById("form-monthly-equity").value = entry.monthlyEquity || "";
+    document.getElementById("form-loan-amount").value = entry.loanAmount || "";
+    document.getElementById("form-ma-hdmf").value = entry.maHdmf || "";
+    document.getElementById("form-gmi-hdmf").value = entry.gmiHdmf || "";
+    document.getElementById("form-ma-bdo").value = entry.maBdo || "";
+    document.getElementById("form-gmi-bdo").value = entry.gmiBdo || "";
+    document.getElementById("form-ma-rcbc").value = entry.maRcbc || "";
+    document.getElementById("form-gmi-rcbc").value = entry.gmiRcbc || "";
+    document.getElementById("form-status").value = entry.status || "available";
+    document.getElementById("form-hidden").value = entry.hiddenFromUsers ? "true" : "false";
+    
+    document.getElementById("add-form").style.display = "block";
+    document.getElementById("manage-entries").style.display = "none";
+    document.getElementById("form-message").textContent = "";
+}
+
+// Save entry
+function saveEntry() {
+    const index = document.getElementById("edit-index").value;
+    const messageElement = document.getElementById("form-message");
+    
+    // Validate required fields
+    const requiredFields = ['project', 'site', 'unit-type', 'block', 'lt'];
+    for (const field of requiredFields) {
+        const value = document.getElementById(`form-${field}`).value.trim();
+        if (!value) {
+            messageElement.textContent = `Please fill in the ${field.replace('-', ' ')} field`;
+            messageElement.className = "temp-message error-message";
+            return;
+        }
+    }
+    
+    const entry = {
+        project: document.getElementById("form-project").value.trim(),
+        site: document.getElementById("form-site").value.trim(),
+        unitType: document.getElementById("form-unit-type").value.trim(),
+        block: document.getElementById("form-block").value.trim(),
+        lt: document.getElementById("form-lt").value.trim(),
+        lotArea: parseFloat(document.getElementById("form-lot-area").value) || 0,
+        houseType: document.getElementById("form-house-type").value.trim(),
+        contractPrice: parseFloat(document.getElementById("form-contract-price").value) || 0,
+        pc1: parseFloat(document.getElementById("form-pc1").value) || 0,
+        pc2: parseFloat(document.getElementById("form-pc2").value) || 0,
+        too: parseFloat(document.getElementById("form-too").value) || 0,
+        dp: parseFloat(document.getElementById("form-dp").value) || 0,
+        reservationFee: parseFloat(document.getElementById("form-reservation-fee").value) || 0,
+        equityPromo: parseFloat(document.getElementById("form-equity-promo").value) || 0,
+        equityPayment: parseFloat(document.getElementById("form-equity-payment").value) || 0,
+        term: parseInt(document.getElementById("form-term").value) || 0,
+        monthlyEquity: parseFloat(document.getElementById("form-monthly-equity").value) || 0,
+        loanAmount: parseFloat(document.getElementById("form-loan-amount").value) || 0,
+        maHdmf: parseFloat(document.getElementById("form-ma-hdmf").value) || 0,
+        gmiHdmf: parseFloat(document.getElementById("form-gmi-hdmf").value) || 0,
+        maBdo: parseFloat(document.getElementById("form-ma-bdo").value) || 0,
+        gmiBdo: parseFloat(document.getElementById("form-gmi-bdo").value) || 0,
+        maRcbc: parseFloat(document.getElementById("form-ma-rcbc").value) || 0,
+        gmiRcbc: parseFloat(document.getElementById("form-gmi-rcbc").value) || 0,
+        status: document.getElementById("form-status").value,
+        hiddenFromUsers: document.getElementById("form-hidden").value === "true"
+    };
+    
+    if (index === "-1") {
+        // Add new entry
+        inventory.push(entry);
+    } else {
+        // Update existing entry
+        inventory[index] = entry;
+    }
+    
+    localStorage.setItem("inventory", JSON.stringify(inventory));
+    loadInventory();
+    
+    messageElement.textContent = "Entry saved successfully!";
+    messageElement.className = "temp-message success-message";
+    
+    setTimeout(() => {
+        document.getElementById("add-form").style.display = "none";
+        messageElement.textContent = "";
+    }, 1500);
+}
+
+// Cancel edit
+function cancelEdit() {
+    document.getElementById("add-form").style.display = "none";
+    document.getElementById("form-message").textContent = "";
+}
+
+// Duplicate entry
+function duplicateEntry() {
+    const index = document.getElementById("edit-index").value;
+    if (index === "-1") return;
+    
+    const original = inventory[index];
+    const newEntry = JSON.parse(JSON.stringify(original));
+    
+    // Make the new entry unique
+    newEntry.lt = makeUniqueLotNumber(original.lt);
+    
+    // Reset visibility for the new entry
+    newEntry.hiddenFromUsers = false;
+    
+    inventory.push(newEntry);
+    localStorage.setItem("inventory", JSON.stringify(inventory));
+    loadInventory();
+    
+    const messageElement = document.getElementById("form-message");
+    messageElement.textContent = "Entry duplicated successfully!";
+    messageElement.className = "temp-message success-message";
+    
+    setTimeout(() => {
+        document.getElementById("add-form").style.display = "none";
+        messageElement.textContent = "";
+    }, 1500);
+}
+
+function makeUniqueLotNumber(originalLot) {
+    if (!originalLot) return "1";
+    
+    // If it's a number, increment it
+    if (!isNaN(originalLot)) {
+        return (parseInt(originalLot) + 1).toString();
+    }
+    
+    // If it ends with a number, increment that number
+    const match = originalLot.match(/(\d+)$/);
+    if (match) {
+        const num = parseInt(match[1]);
+        return originalLot.replace(/\d+$/, (num + 1).toString());
+    }
+    
+    // Otherwise, add a suffix
+    return originalLot + "-1";
+}
+
+// Delete entry with confirmation
+function confirmDeleteEntry(index) {
+    if (confirm(`Are you sure you want to delete this entry?\n\nProject: ${inventory[index].project}\nBlock-Lot: ${inventory[index].block}-${inventory[index].lt}`)) {
+        deleteEntry(index);
+    }
+}
+
+function deleteEntry(index) {
+    inventory.splice(index, 1);
+    localStorage.setItem("inventory", JSON.stringify(inventory));
+    loadInventory();
+    
+    // If we're in manage entries view, update that too
+    if (document.getElementById("manage-entries").style.display === "block") {
+        renderEntriesList();
+        document.getElementById("entry-details").innerHTML = "<p>Select an entry from the list to view and edit details</p>";
+    }
+}
+
+// Show manage entries section
 function showManageEntries() {
     document.getElementById("add-form").style.display = "none";
     document.getElementById("manage-entries").style.display = "block";
     renderEntriesList();
 }
 
-// New function to render entries list
+// Render entries list for management
 function renderEntriesList() {
     const entriesList = document.getElementById("entries-list");
     entriesList.innerHTML = "";
@@ -1119,7 +1187,15 @@ function renderEntriesList() {
     });
 }
 
-// New function to show entry details
+// Get status class for badge
+function getStatusClass(status) {
+    if (status === "available") return "status-available";
+    if (status === "with-folder") return "status-with-folder";
+    if (status === "sold") return "status-sold";
+    return "";
+}
+
+// Show entry details in manage section
 function showEntryDetails(index) {
     const entry = inventory[index];
     const detailsContainer = document.getElementById("entry-details");
@@ -1142,13 +1218,13 @@ function showEntryDetails(index) {
                     <label>Site</label>
                     <input type="text" id="manage-site" value="${entry.site || ''}" required>
                 </div>
-            </div>
-            
-            <div class="form-row">
                 <div class="form-group">
                     <label>Unit Type</label>
                     <input type="text" id="manage-unit-type" value="${entry.unitType || ''}" required>
                 </div>
+            </div>
+            
+            <div class="form-row">
                 <div class="form-group">
                     <label>Block</label>
                     <input type="text" id="manage-block" value="${entry.block || ''}" required>
@@ -1156,6 +1232,100 @@ function showEntryDetails(index) {
                 <div class="form-group">
                     <label>Lot</label>
                     <input type="text" id="manage-lt" value="${entry.lt || ''}" required>
+                </div>
+                <div class="form-group">
+                    <label>Lot Area (sqm)</label>
+                    <input type="number" id="manage-lot-area" value="${entry.lotArea || ''}">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>House Type</label>
+                    <input type="text" id="manage-house-type" value="${entry.houseType || ''}">
+                </div>
+                <div class="form-group">
+                    <label>Contract Price</label>
+                    <input type="number" id="manage-contract-price" value="${entry.contractPrice || ''}">
+                </div>
+                <div class="form-group">
+                    <label>PC1</label>
+                    <input type="number" id="manage-pc1" value="${entry.pc1 || ''}">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>PC2</label>
+                    <input type="number" id="manage-pc2" value="${entry.pc2 || ''}">
+                </div>
+                <div class="form-group">
+                    <label>TOO</label>
+                    <input type="number" id="manage-too" value="${entry.too || ''}">
+                </div>
+                <div class="form-group">
+                    <label>DP</label>
+                    <input type="number" id="manage-dp" value="${entry.dp || ''}">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Reservation Fee</label>
+                    <input type="number" id="manage-reservation-fee" value="${entry.reservationFee || ''}">
+                </div>
+                <div class="form-group">
+                    <label>Equity Promo</label>
+                    <input type="number" id="manage-equity-promo" value="${entry.equityPromo || ''}">
+                </div>
+                <div class="form-group">
+                    <label>Equity Payment</label>
+                    <input type="number" id="manage-equity-payment" value="${entry.equityPayment || ''}">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Term (months)</label>
+                    <input type="number" id="manage-term" value="${entry.term || ''}">
+                </div>
+                <div class="form-group">
+                    <label>Monthly Equity</label>
+                    <input type="number" id="manage-monthly-equity" value="${entry.monthlyEquity || ''}">
+                </div>
+                <div class="form-group">
+                    <label>Loan Amount</label>
+                    <input type="number" id="manage-loan-amount" value="${entry.loanAmount || ''}">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>MA (HDMF)</label>
+                    <input type="number" id="manage-ma-hdmf" value="${entry.maHdmf || ''}">
+                </div>
+                <div class="form-group">
+                    <label>GMI (HDMF)</label>
+                    <input type="number" id="manage-gmi-hdmf" value="${entry.gmiHdmf || ''}">
+                </div>
+                <div class="form-group">
+                    <label>MA (BDO)</label>
+                    <input type="number" id="manage-ma-bdo" value="${entry.maBdo || ''}">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>GMI (BDO)</label>
+                    <input type="number" id="manage-gmi-bdo" value="${entry.gmiBdo || ''}">
+                </div>
+                <div class="form-group">
+                    <label>MA (RCBC)</label>
+                    <input type="number" id="manage-ma-rcbc" value="${entry.maRcbc || ''}">
+                </div>
+                <div class="form-group">
+                    <label>GMI (RCBC)</label>
+                    <input type="number" id="manage-gmi-rcbc" value="${entry.gmiRcbc || ''}">
                 </div>
             </div>
             
@@ -1180,7 +1350,7 @@ function showEntryDetails(index) {
             <div class="form-actions">
                 <button type="button" onclick="saveManagedEntry(${index})" class="btn btn-edit">Save Changes</button>
                 <button type="button" onclick="confirmDeleteEntry(${index})" class="btn btn-delete">Delete Entry</button>
-                <button type="button" onclick="duplicateEntry(${index})" class="btn btn-duplicate">Duplicate Entry</button>
+                <button type="button" onclick="duplicateManagedEntry(${index})" class="btn btn-duplicate">Duplicate Entry</button>
             </div>
             
             <div id="manage-message" class="temp-message" style="margin-top: 15px;"></div>
@@ -1188,7 +1358,7 @@ function showEntryDetails(index) {
     `;
 }
 
-// New function to save changes from manage entries
+// Save managed entry
 function saveManagedEntry(index) {
     const entry = inventory[index];
     const messageElement = document.getElementById("manage-message");
@@ -1209,48 +1379,36 @@ function saveManagedEntry(index) {
     entry.unitType = document.getElementById("manage-unit-type").value.trim();
     entry.block = document.getElementById("manage-block").value.trim();
     entry.lt = document.getElementById("manage-lt").value.trim();
+    entry.lotArea = parseFloat(document.getElementById("manage-lot-area").value) || 0;
+    entry.houseType = document.getElementById("manage-house-type").value.trim();
+    entry.contractPrice = parseFloat(document.getElementById("manage-contract-price").value) || 0;
+    entry.pc1 = parseFloat(document.getElementById("manage-pc1").value) || 0;
+    entry.pc2 = parseFloat(document.getElementById("manage-pc2").value) || 0;
+    entry.too = parseFloat(document.getElementById("manage-too").value) || 0;
+    entry.dp = parseFloat(document.getElementById("manage-dp").value) || 0;
+    entry.reservationFee = parseFloat(document.getElementById("manage-reservation-fee").value) || 0;
+    entry.equityPromo = parseFloat(document.getElementById("manage-equity-promo").value) || 0;
+    entry.equityPayment = parseFloat(document.getElementById("manage-equity-payment").value) || 0;
+    entry.term = parseInt(document.getElementById("manage-term").value) || 0;
+    entry.monthlyEquity = parseFloat(document.getElementById("manage-monthly-equity").value) || 0;
+    entry.loanAmount = parseFloat(document.getElementById("manage-loan-amount").value) || 0;
+    entry.maHdmf = parseFloat(document.getElementById("manage-ma-hdmf").value) || 0;
+    entry.gmiHdmf = parseFloat(document.getElementById("manage-gmi-hdmf").value) || 0;
+    entry.maBdo = parseFloat(document.getElementById("manage-ma-bdo").value) || 0;
+    entry.gmiBdo = parseFloat(document.getElementById("manage-gmi-bdo").value) || 0;
+    entry.maRcbc = parseFloat(document.getElementById("manage-ma-rcbc").value) || 0;
+    entry.gmiRcbc = parseFloat(document.getElementById("manage-gmi-rcbc").value) || 0;
     entry.status = document.getElementById("manage-status").value;
     entry.hiddenFromUsers = document.getElementById("manage-hidden").value === 'true';
     
     localStorage.setItem("inventory", JSON.stringify(inventory));
     loadInventory();
+    renderEntriesList();
     showManageMessage('Entry updated successfully!', 'success');
 }
 
-// New function to show messages in manage section
-function showManageMessage(message, type) {
-    const messageElement = document.getElementById("manage-message");
-    messageElement.textContent = message;
-    messageElement.className = `temp-message ${type}-message`;
-    setTimeout(() => messageElement.textContent = '', 3000);
-}
-
-// New function to get status class
-function getStatusClass(status) {
-    if(status === "available") return "status-available";
-    if(status === "with-folder") return "status-with-folder";
-    if(status === "sold") return "status-sold";
-    return "";
-}
-
-// Enhanced delete function with confirmation
-function confirmDeleteEntry(index) {
-    if(confirm("Are you sure you want to delete this entry?\n\nProject: " + inventory[index].project + "\nBlock-Lot: " + inventory[index].block + "-" + inventory[index].lt)) {
-        deleteEntry(index);
-    }
-}
-
-function deleteEntry(index) {
-    inventory.splice(index, 1);
-    localStorage.setItem("inventory", JSON.stringify(inventory));
-    loadInventory();
-    renderEntriesList();
-    document.getElementById("entry-details").innerHTML = "<p>Select an entry from the list to view and edit details</p>";
-    showMessage("Entry deleted successfully", "success");
-}
-
-// Enhanced duplicate function
-function duplicateEntry(index) {
+// Duplicate entry from manage view
+function duplicateManagedEntry(index) {
     const original = inventory[index];
     const newEntry = JSON.parse(JSON.stringify(original));
     
@@ -1264,29 +1422,361 @@ function duplicateEntry(index) {
     localStorage.setItem("inventory", JSON.stringify(inventory));
     loadInventory();
     renderEntriesList();
-    showMessage('Entry duplicated successfully!', 'success');
+    showManageMessage('Entry duplicated successfully!', 'success');
 }
 
-function makeUniqueLotNumber(originalLot) {
-    if (!originalLot) return "1";
-    
-    // If it's a number, increment it
-    if (!isNaN(originalLot)) {
-        return (parseInt(originalLot) + 1).toString();
-    }
-    
-    // If it ends with a number, increment that number
-    const match = originalLot.match(/(\d+)$/);
-    if (match) {
-        const num = parseInt(match[1]);
-        return originalLot.replace(/\d+$/, (num + 1).toString());
-    }
-    
-    // Otherwise, add a suffix
-    return originalLot + "-1";
+// Show message in manage section
+function showManageMessage(message, type) {
+    const messageElement = document.getElementById("manage-message");
+    messageElement.textContent = message;
+    messageElement.className = `temp-message ${type}-message`;
+    setTimeout(() => messageElement.textContent = '', 3000);
 }
 
-// Rest of the functions remain the same (showAddForm, editEntry, saveEntry, etc.)
+// Save all data
+function saveData() {
+    localStorage.setItem("inventory", JSON.stringify(inventory));
+    localStorage.setItem("bulletinEntries", JSON.stringify(bulletinEntries));
+    localStorage.setItem("salesData", JSON.stringify(salesData));
+    localStorage.setItem("users", JSON.stringify(USERS));
+    
+    alert("All data has been saved successfully!");
+}
+
+// Export to CSV
+function exportToCSV() {
+    let csv = "Project,Site,Unit Type,Block,Lot,Lot Area,House Type,Contract Price,PC1,PC2,TOO,DP,Reservation Fee,Equity Promo,Equity Payment,Term,Monthly Equity,Loan Amount,MA (HDMF),GMI (HDMF),MA (BDO),GMI (BDO),MA (RCBC),GMI (RCBC),Status,Hidden From Users\n";
+    
+    inventory.forEach(entry => {
+        csv += `"${entry.project || ''}","${entry.site || ''}","${entry.unitType || ''}","${entry.block || ''}","${entry.lt || ''}",${entry.lotArea || ''},"${entry.houseType || ''}",${entry.contractPrice || ''},${entry.pc1 || ''},${entry.pc2 || ''},${entry.too || ''},${entry.dp || ''},${entry.reservationFee || ''},${entry.equityPromo || ''},${entry.equityPayment || ''},${entry.term || ''},${entry.monthlyEquity || ''},${entry.loanAmount || ''},${entry.maHdmf || ''},${entry.gmiHdmf || ''},${entry.maBdo || ''},${entry.gmiBdo || ''},${entry.maRcbc || ''},${entry.gmiRcbc || ''},"${entry.status || ''}","${entry.hiddenFromUsers || false}"\n`;
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "inventory_export.csv");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Bulletin Functions
+function renderBulletin() {
+    if (localStorage.getItem("bulletinEntries")) {
+        bulletinEntries = JSON.parse(localStorage.getItem("bulletinEntries"));
+    }
+    
+    const container = document.getElementById("bulletin-container");
+    container.innerHTML = "";
+    
+    if (bulletinEntries.length === 0) {
+        container.innerHTML = "<p>No sold units to display</p>";
+        return;
+    }
+    
+    // Group by date
+    const groupedByDate = {};
+    bulletinEntries.forEach(entry => {
+        if (!groupedByDate[entry.date]) {
+            groupedByDate[entry.date] = [];
+        }
+        groupedByDate[entry.date].push(entry);
+    });
+    
+    // Sort dates in descending order
+    const sortedDates = Object.keys(groupedByDate).sort((a, b) => new Date(b) - new Date(a));
+    
+    // Display each date's entries
+    sortedDates.forEach(date => {
+        const dateEntries = groupedByDate[date];
+        
+        const bulletin = document.createElement("div");
+        bulletin.className = "bulletin";
+        
+        const formattedDate = new Date(date).toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        
+        bulletin.innerHTML = `
+            <div class="bulletin-title">SOLD UNITS</div>
+            <div class="bulletin-date">${formattedDate}</div>
+        `;
+        
+        dateEntries.forEach(entry => {
+            const unitDiv = document.createElement("div");
+            unitDiv.className = "bulletin-unit";
+            unitDiv.innerHTML = `
+                <div class="bulletin-agent">${entry.agent}</div>
+                <div>${entry.project} - ${entry.blockLot}</div>
+            `;
+            bulletin.appendChild(unitDiv);
+        });
+        
+        bulletin.innerHTML += `<div class="bulletin-congrats">CONGRATULATIONS!</div>`;
+        container.appendChild(bulletin);
+    });
+    
+    // Render entries list for management
+    const entriesList = document.getElementById("bulletin-entries-list");
+    entriesList.innerHTML = "";
+    
+    bulletinEntries.forEach((entry, index) => {
+        const row = entriesList.insertRow();
+        row.innerHTML = `
+            <td>${new Date(entry.date).toLocaleDateString()}</td>
+            <td>${entry.agent}</td>
+            <td>${entry.project}</td>
+            <td>${entry.blockLot}</td>
+            <td>
+                <button onclick="editBulletinEntry(${index})" class="btn btn-edit">Edit</button>
+                <button onclick="deleteBulletinEntry(${index})" class="btn btn-delete">Delete</button>
+            </td>
+        `;
+    });
+}
+
+function addBulletinEntry() {
+    const date = document.getElementById("bulletin-date").value;
+    const agent = document.getElementById("bulletin-agent").value.trim();
+    const project = document.getElementById("bulletin-project").value.trim();
+    const blockLot = document.getElementById("bulletin-block-lot").value.trim();
+    
+    if (!date || !agent || !project || !blockLot) {
+        alert("Please fill in all fields");
+        return;
+    }
+    
+    bulletinEntries.push({
+        date,
+        agent,
+        project,
+        blockLot
+    });
+    
+    localStorage.setItem("bulletinEntries", JSON.stringify(bulletinEntries));
+    renderBulletin();
+    
+    // Clear form
+    document.getElementById("bulletin-agent").value = "";
+    document.getElementById("bulletin-project").value = "";
+    document.getElementById("bulletin-block-lot").value = "";
+}
+
+function editBulletinEntry(index) {
+    const entry = bulletinEntries[index];
+    document.getElementById("bulletin-date").value = entry.date;
+    document.getElementById("bulletin-agent").value = entry.agent;
+    document.getElementById("bulletin-project").value = entry.project;
+    document.getElementById("bulletin-block-lot").value = entry.blockLot;
+    
+    // Remove the old entry
+    bulletinEntries.splice(index, 1);
+    localStorage.setItem("bulletinEntries", JSON.stringify(bulletinEntries));
+    renderBulletin();
+}
+
+function deleteBulletinEntry(index) {
+    if (confirm("Are you sure you want to delete this bulletin entry?")) {
+        bulletinEntries.splice(index, 1);
+        localStorage.setItem("bulletinEntries", JSON.stringify(bulletinEntries));
+        renderBulletin();
+    }
+}
+
+// Sales Report Functions
+function renderSalesReport() {
+    if (localStorage.getItem("salesData")) {
+        salesData = JSON.parse(localStorage.getItem("salesData"));
+    }
+    
+    const today = new Date();
+    document.getElementById("sales-report-date").textContent = today.toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    });
+    
+    const salesList = document.getElementById("sales-report-list");
+    salesList.innerHTML = "";
+    
+    if (salesData.length === 0) {
+        salesList.innerHTML = "<tr><td colspan='5'>No sales data available</td></tr>";
+        return;
+    }
+    
+    salesData.forEach((team, index) => {
+        const row = salesList.insertRow();
+        const balance = team.quota - team.today;
+        
+        row.innerHTML = `
+            <td>${team.name}</td>
+            <td>${formatNumber(team.quota)}</td>
+            <td>${formatNumber(team.today)}</td>
+            <td>${formatNumber(balance)}</td>
+            <td class="admin-only">
+                <button onclick="editSalesData(${index})" class="btn btn-edit">Edit</button>
+                <button onclick="deleteSalesData(${index})" class="btn btn-delete">Delete</button>
+            </td>
+        `;
+        
+        if (balance <= 0) {
+            row.style.backgroundColor = "#e8f5e9";
+        } else {
+            row.style.backgroundColor = "#ffebee";
+        }
+    });
+}
+
+function editSalesData(index) {
+    const team = salesData[index];
+    document.getElementById("sales-team").value = team.name;
+    document.getElementById("sales-quota").value = team.quota;
+    document.getElementById("sales-today").value = team.today;
+    document.getElementById("sales-edit-index").value = index;
+}
+
+function saveSalesData() {
+    const name = document.getElementById("sales-team").value.trim();
+    const quota = parseFloat(document.getElementById("sales-quota").value) || 0;
+    const today = parseFloat(document.getElementById("sales-today").value) || 0;
+    const editIndex = document.getElementById("sales-edit-index").value;
+    
+    if (!name) {
+        alert("Please enter a team name");
+        return;
+    }
+    
+    const teamData = {
+        name,
+        quota,
+        today
+    };
+    
+    if (editIndex === "-1") {
+        // Add new team
+        salesData.push(teamData);
+    } else {
+        // Update existing team
+        salesData[editIndex] = teamData;
+    }
+    
+    localStorage.setItem("salesData", JSON.stringify(salesData));
+    renderSalesReport();
+    
+    // Clear form
+    document.getElementById("sales-team").value = "";
+    document.getElementById("sales-quota").value = "";
+    document.getElementById("sales-today").value = "";
+    document.getElementById("sales-edit-index").value = "-1";
+}
+
+function cancelSalesEdit() {
+    document.getElementById("sales-team").value = "";
+    document.getElementById("sales-quota").value = "";
+    document.getElementById("sales-today").value = "";
+    document.getElementById("sales-edit-index").value = "-1";
+}
+
+function deleteSalesData(index) {
+    if (confirm("Are you sure you want to delete this sales data?")) {
+        salesData.splice(index, 1);
+        localStorage.setItem("salesData", JSON.stringify(salesData));
+        renderSalesReport();
+    }
+}
+
+// User Management Functions
+function renderUsersList() {
+    if (localStorage.getItem("users")) {
+        USERS = JSON.parse(localStorage.getItem("users"));
+    }
+    
+    const usersList = document.getElementById("users-list");
+    usersList.innerHTML = "";
+    
+    USERS.forEach((user, index) => {
+        const row = usersList.insertRow();
+        row.className = `role-${user.role}`;
+        row.innerHTML = `
+            <td>${user.username}</td>
+            <td class="password-field">${user.password}</td>
+            <td>${user.role}</td>
+            <td>
+                <button onclick="editUser(${index})" class="btn btn-edit">Edit</button>
+                <button onclick="deleteUser(${index})" class="btn btn-delete">Delete</button>
+            </td>
+        `;
+    });
+}
+
+function editUser(index) {
+    const user = USERS[index];
+    document.getElementById("user-username").value = user.username;
+    document.getElementById("user-password").value = user.password;
+    document.getElementById("user-role").value = user.role;
+    document.getElementById("user-edit-index").value = index;
+}
+
+function saveUser() {
+    const username = document.getElementById("user-username").value.trim();
+    const password = document.getElementById("user-password").value.trim();
+    const role = document.getElementById("user-role").value;
+    const editIndex = document.getElementById("user-edit-index").value;
+    
+    if (!username || !password) {
+        alert("Please enter both username and password");
+        return;
+    }
+    
+    // Check if username already exists (except when editing)
+    if (editIndex === "-1" && USERS.some(user => user.username === username)) {
+        alert("Username already exists");
+        return;
+    }
+    
+    const user = {
+        username,
+        password,
+        role
+    };
+    
+    if (editIndex === "-1") {
+        // Add new user
+        USERS.push(user);
+    } else {
+        // Update existing user
+        USERS[editIndex] = user;
+    }
+    
+    localStorage.setItem("users", JSON.stringify(USERS));
+    renderUsersList();
+    
+    // Clear form
+    document.getElementById("user-username").value = "";
+    document.getElementById("user-password").value = "";
+    document.getElementById("user-role").selectedIndex = 0;
+    document.getElementById("user-edit-index").value = "-1";
+}
+
+function cancelUserEdit() {
+    document.getElementById("user-username").value = "";
+    document.getElementById("user-password").value = "";
+    document.getElementById("user-role").selectedIndex = 0;
+    document.getElementById("user-edit-index").value = "-1";
+}
+
+function deleteUser(index) {
+    if (confirm("Are you sure you want to delete this user?")) {
+        USERS.splice(index, 1);
+        localStorage.setItem("users", JSON.stringify(USERS));
+        renderUsersList();
+    }
+}
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
