@@ -81,6 +81,7 @@
         .btn-edit { background-color: #2196F3; color: white; }
         .btn-delete { background-color: #f44336; color: white; }
         .btn-hide-users { background-color: #607D8B; color: white; }
+        .btn-duplicate { background-color: #FFC107; color: black; }
         
         /* Form Styles */
         .form-container {
@@ -91,13 +92,27 @@
             margin-bottom: 20px;
         }
         
-        /* Responsive */
-        @media (max-width: 768px) {
-            .btn {
-                display: block;
-                margin: 5px 0;
-                width: 100%;
-            }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .form-actions {
+            margin-top: 20px;
+            text-align: right;
         }
     </style>
 </head>
@@ -115,6 +130,45 @@
         <button onclick="exportToCSV()" class="btn">Export to CSV</button>
     </div>
     
+    <!-- Add/Edit Form -->
+    <div id="add-form" class="admin-only hidden form-container">
+        <h3 id="form-title">Add New Entry</h3>
+        <div class="form-group">
+            <label>Project</label>
+            <input type="text" id="form-project">
+        </div>
+        <div class="form-group">
+            <label>Site</label>
+            <input type="text" id="form-site">
+        </div>
+        <div class="form-group">
+            <label>Unit Type</label>
+            <input type="text" id="form-unit-type">
+        </div>
+        <div class="form-group">
+            <label>Block</label>
+            <input type="text" id="form-block">
+        </div>
+        <div class="form-group">
+            <label>Lot</label>
+            <input type="text" id="form-lt">
+        </div>
+        <div class="form-group">
+            <label>Status</label>
+            <select id="form-status">
+                <option value="available">Available</option>
+                <option value="with-folder">With Folder</option>
+                <option value="sold">Sold</option>
+            </select>
+        </div>
+        <div class="form-actions">
+            <button onclick="saveEntry()" class="btn btn-edit">Save</button>
+            <button onclick="cancelEdit()" class="btn btn-delete">Cancel</button>
+            <button id="duplicate-btn" onclick="duplicateEntry()" class="btn btn-duplicate hidden">Duplicate</button>
+        </div>
+        <input type="hidden" id="edit-index" value="-1">
+    </div>
+    
     <!-- Inventory Table -->
     <div style="overflow-x: auto;">
         <table id="inventory-table">
@@ -123,11 +177,8 @@
                     <th>Project</th>
                     <th>Site</th>
                     <th>Unit Type</th>
-                    <th>Blk</th>
-                    <th>Lt</th>
-                    <th>Lot Area</th>
-                    <th>House Type</th>
-                    <th>Contract Price</th>
+                    <th>Block</th>
+                    <th>Lot</th>
                     <th>Status</th>
                     <th class="admin-only">Actions</th>
                 </tr>
@@ -148,9 +199,6 @@ let inventory = [
         unitType: "Townhouse",
         block: "A",
         lt: "15",
-        lotArea: 120,
-        houseType: "Model A",
-        contractPrice: 1500000,
         status: "available"
     }
 ];
@@ -180,28 +228,71 @@ function loadInventory() {
             <td>${entry.unitType}</td>
             <td>${entry.block}</td>
             <td>${entry.lt}</td>
-            <td>${entry.lotArea}</td>
-            <td>${entry.houseType}</td>
-            <td>${formatNumber(entry.contractPrice)}</td>
             <td><span class="status-badge ${statusClass}">${entry.status.replace('-', ' ')}</span></td>
             <td class="admin-only">
                 <button onclick="editEntry(${index})" class="btn btn-edit">Edit</button>
                 <button onclick="deleteEntry(${index})" class="btn btn-delete">Delete</button>
+                <button onclick="duplicateEntry(${index})" class="btn btn-duplicate">Duplicate</button>
                 <button onclick="hideFromUsers(${index})" class="btn btn-hide-users">Hide Users</button>
             </td>
         `;
     });
 }
 
-// Format number with commas
-function formatNumber(num) {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+// Show add form
+function showAddForm() {
+    document.getElementById("form-title").textContent = "Add New Entry";
+    document.getElementById("add-form").style.display = "block";
+    document.getElementById("edit-index").value = "-1";
+    document.getElementById("duplicate-btn").classList.add("hidden");
+    clearForm();
 }
 
 // Edit entry
 function editEntry(index) {
-    // Implementation would go here
-    alert("Edit functionality for entry at index " + index);
+    const entry = inventory[index];
+    
+    document.getElementById("form-title").textContent = "Edit Entry";
+    document.getElementById("form-project").value = entry.project;
+    document.getElementById("form-site").value = entry.site;
+    document.getElementById("form-unit-type").value = entry.unitType;
+    document.getElementById("form-block").value = entry.block;
+    document.getElementById("form-lt").value = entry.lt;
+    document.getElementById("form-status").value = entry.status;
+    
+    document.getElementById("edit-index").value = index;
+    document.getElementById("add-form").style.display = "block";
+    document.getElementById("duplicate-btn").classList.remove("hidden");
+}
+
+// Save entry
+function saveEntry() {
+    const index = parseInt(document.getElementById("edit-index").value);
+    const entry = {
+        project: document.getElementById("form-project").value,
+        site: document.getElementById("form-site").value,
+        unitType: document.getElementById("form-unit-type").value,
+        block: document.getElementById("form-block").value,
+        lt: document.getElementById("form-lt").value,
+        status: document.getElementById("form-status").value
+    };
+    
+    if(!entry.project || !entry.site || !entry.unitType) {
+        alert("Please fill required fields");
+        return;
+    }
+    
+    if(index >= 0) {
+        // Update existing entry
+        inventory[index] = entry;
+    } else {
+        // Add new entry
+        inventory.push(entry);
+    }
+    
+    localStorage.setItem("inventory", JSON.stringify(inventory));
+    document.getElementById("add-form").style.display = "none";
+    loadInventory();
 }
 
 // Delete entry
@@ -209,6 +300,22 @@ function deleteEntry(index) {
     if(confirm("Are you sure you want to delete this entry?")) {
         inventory.splice(index, 1);
         localStorage.setItem("inventory", JSON.stringify(inventory));
+        loadInventory();
+    }
+}
+
+// Duplicate entry
+function duplicateEntry(index = null) {
+    if(index === null) {
+        index = parseInt(document.getElementById("edit-index").value);
+    }
+    
+    if(index >= 0) {
+        const entry = JSON.parse(JSON.stringify(inventory[index]));
+        entry.lt = (parseInt(entry.lt) + 1).toString(); // Increment lot number
+        inventory.push(entry);
+        localStorage.setItem("inventory", JSON.stringify(inventory));
+        document.getElementById("add-form").style.display = "none";
         loadInventory();
     }
 }
@@ -221,6 +328,21 @@ function hideFromUsers(index) {
     alert("This entry will now be hidden from regular users");
 }
 
+// Cancel edit
+function cancelEdit() {
+    document.getElementById("add-form").style.display = "none";
+}
+
+// Clear form
+function clearForm() {
+    document.getElementById("form-project").value = "";
+    document.getElementById("form-site").value = "";
+    document.getElementById("form-unit-type").value = "";
+    document.getElementById("form-block").value = "";
+    document.getElementById("form-lt").value = "";
+    document.getElementById("form-status").value = "available";
+}
+
 // Save all data
 function saveData() {
     localStorage.setItem("inventory", JSON.stringify(inventory));
@@ -229,8 +351,21 @@ function saveData() {
 
 // Export to CSV
 function exportToCSV() {
-    // Implementation would go here
-    alert("Export to CSV functionality");
+    let csv = "Project,Site,Unit Type,Block,Lot,Status\n";
+    
+    inventory.forEach(entry => {
+        csv += `"${entry.project}","${entry.site}","${entry.unitType}","${entry.block}","${entry.lt}","${entry.status}"\n`;
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "inventory_export.csv");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 // Logout function
