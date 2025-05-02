@@ -80,8 +80,6 @@
         
         .btn-edit { background-color: #2196F3; color: white; }
         .btn-delete { background-color: #f44336; color: white; }
-        .btn-duplicate { background-color: #FFC107; color: black; }
-        .btn-hide { background-color: #9E9E9E; color: white; }
         .btn-hide-users { background-color: #607D8B; color: white; }
         
         /* Form Styles */
@@ -93,51 +91,12 @@
             margin-bottom: 20px;
         }
         
-        .form-row {
-            display: flex;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-        
-        .form-group {
-            flex: 1;
-            min-width: 200px;
-            margin-right: 15px;
-            margin-bottom: 10px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        
-        .form-group input, 
-        .form-group select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        
-        .form-actions {
-            margin-top: 20px;
-            text-align: right;
-        }
-        
         /* Responsive */
-        @media (max-width: 1200px) {
-            .form-group {
-                min-width: 150px;
-            }
-        }
-        
         @media (max-width: 768px) {
-            .form-group {
-                min-width: 100%;
-                margin-right: 0;
+            .btn {
+                display: block;
+                margin: 5px 0;
+                width: 100%;
             }
         }
     </style>
@@ -156,149 +115,6 @@
         <button onclick="exportToCSV()" class="btn">Export to CSV</button>
     </div>
     
-    <!-- Add/Edit Form -->
-    <div id="add-form" class="admin-only hidden form-container">
-        <h3>Add/Edit Inventory Entry</h3>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Project</label>
-                <input type="text" id="form-project">
-            </div>
-            <div class="form-group">
-                <label>Site</label>
-                <input type="text" id="form-site">
-            </div>
-            <div class="form-group">
-                <label>Unit Type</label>
-                <input type="text" id="form-unit-type">
-            </div>
-        </div>
-        
-        <div class="form-row">
-            <div class="form-group">
-                <label>Blk</label>
-                <input type="text" id="form-block">
-            </div>
-            <div class="form-group">
-                <label>Lt</label>
-                <input type="text" id="form-lt">
-            </div>
-            <div class="form-group">
-                <label>Lot Area (sqm)</label>
-                <input type="number" id="form-lot-area">
-            </div>
-        </div>
-        
-        <div class="form-row">
-            <div class="form-group">
-                <label>House Type</label>
-                <input type="text" id="form-house-type">
-            </div>
-            <div class="form-group">
-                <label>Contract Price</label>
-                <input type="number" id="form-contract-price">
-            </div>
-            <div class="form-group">
-                <label>PC1</label>
-                <input type="number" id="form-pc1">
-            </div>
-        </div>
-        
-        <div class="form-row">
-            <div class="form-group">
-                <label>PC2</label>
-                <input type="number" id="form-pc2">
-            </div>
-            <div class="form-group">
-                <label>TOO</label>
-                <input type="number" id="form-too">
-            </div>
-            <div class="form-group">
-                <label>DP</label>
-                <input type="number" id="form-dp">
-            </div>
-        </div>
-        
-        <div class="form-row">
-            <div class="form-group">
-                <label>Reservation Fee</label>
-                <input type="number" id="form-reservation-fee">
-            </div>
-            <div class="form-group">
-                <label>Equity Promo</label>
-                <input type="number" id="form-equity-promo">
-            </div>
-            <div class="form-group">
-                <label>Equity For Payment</label>
-                <input type="number" id="form-equity-payment">
-            </div>
-        </div>
-        
-        <div class="form-row">
-            <div class="form-group">
-                <label>Term (months)</label>
-                <input type="number" id="form-term">
-            </div>
-            <div class="form-group">
-                <label>Monthly Equity</label>
-                <input type="number" id="form-monthly-equity">
-            </div>
-            <div class="form-group">
-                <label>Loan Amount</label>
-                <input type="number" id="form-loan-amount">
-            </div>
-        </div>
-        
-        <div class="form-row">
-            <div class="form-group">
-                <label>Estd. MA (HDMF)</label>
-                <input type="number" id="form-ma-hdmf">
-            </div>
-            <div class="form-group">
-                <label>Min GMI (HDMF)</label>
-                <input type="number" id="form-gmi-hdmf">
-            </div>
-            <div class="form-group">
-                <label>Estd. MA (BDO)</label>
-                <input type="number" id="form-ma-bdo">
-            </div>
-        </div>
-        
-        <div class="form-row">
-            <div class="form-group">
-                <label>Min GMI (BDO)</label>
-                <input type="number" id="form-gmi-bdo">
-            </div>
-            <div class="form-group">
-                <label>Estd. MA (RCBC)</label>
-                <input type="number" id="form-ma-rcbc">
-            </div>
-            <div class="form-group">
-                <label>Min GMI (RCBC)</label>
-                <input type="number" id="form-gmi-rcbc">
-            </div>
-        </div>
-        
-        <div class="form-row">
-            <div class="form-group">
-                <label>Status</label>
-                <select id="form-status">
-                    <option value="available">Available</option>
-                    <option value="with-folder">With Folder</option>
-                    <option value="sold">Sold</option>
-                </select>
-            </div>
-        </div>
-        
-        <div class="form-actions">
-            <button onclick="saveEntry()" class="btn btn-edit">Save</button>
-            <button onclick="cancelEdit()" class="btn btn-delete">Cancel</button>
-            <button onclick="duplicateEntry()" class="btn btn-duplicate">Duplicate</button>
-        </div>
-        
-        <input type="hidden" id="edit-index" value="-1">
-    </div>
-    
     <!-- Inventory Table -->
     <div style="overflow-x: auto;">
         <table id="inventory-table">
@@ -312,22 +128,6 @@
                     <th>Lot Area</th>
                     <th>House Type</th>
                     <th>Contract Price</th>
-                    <th>PC1</th>
-                    <th>PC2</th>
-                    <th>TOO</th>
-                    <th>DP</th>
-                    <th>Reservation Fee</th>
-                    <th>Equity Promo</th>
-                    <th>Equity Payment</th>
-                    <th>Term</th>
-                    <th>Monthly Equity</th>
-                    <th>Loan Amount</th>
-                    <th>MA (HDMF)</th>
-                    <th>GMI (HDMF)</th>
-                    <th>MA (BDO)</th>
-                    <th>GMI (BDO)</th>
-                    <th>MA (RCBC)</th>
-                    <th>GMI (RCBC)</th>
                     <th>Status</th>
                     <th class="admin-only">Actions</th>
                 </tr>
@@ -351,22 +151,6 @@ let inventory = [
         lotArea: 120,
         houseType: "Model A",
         contractPrice: 1500000,
-        pc1: 50000,
-        pc2: 45000,
-        too: 100000,
-        dp: 300000,
-        reservationFee: 10000,
-        equityPromo: 250000,
-        equityPayment: 50000,
-        term: 24,
-        monthlyEquity: 12500,
-        loanAmount: 1200000,
-        maHdmf: 15000,
-        gmiHdmf: 50000,
-        maBdo: 16000,
-        gmiBdo: 55000,
-        maRcbc: 15500,
-        gmiRcbc: 52000,
         status: "available"
     }
 ];
@@ -399,28 +183,10 @@ function loadInventory() {
             <td>${entry.lotArea}</td>
             <td>${entry.houseType}</td>
             <td>${formatNumber(entry.contractPrice)}</td>
-            <td>${formatNumber(entry.pc1)}</td>
-            <td>${formatNumber(entry.pc2)}</td>
-            <td>${formatNumber(entry.too)}</td>
-            <td>${formatNumber(entry.dp)}</td>
-            <td>${formatNumber(entry.reservationFee)}</td>
-            <td>${formatNumber(entry.equityPromo)}</td>
-            <td>${formatNumber(entry.equityPayment)}</td>
-            <td>${entry.term}</td>
-            <td>${formatNumber(entry.monthlyEquity)}</td>
-            <td>${formatNumber(entry.loanAmount)}</td>
-            <td>${formatNumber(entry.maHdmf)}</td>
-            <td>${formatNumber(entry.gmiHdmf)}</td>
-            <td>${formatNumber(entry.maBdo)}</td>
-            <td>${formatNumber(entry.gmiBdo)}</td>
-            <td>${formatNumber(entry.maRcbc)}</td>
-            <td>${formatNumber(entry.gmiRcbc)}</td>
             <td><span class="status-badge ${statusClass}">${entry.status.replace('-', ' ')}</span></td>
             <td class="admin-only">
                 <button onclick="editEntry(${index})" class="btn btn-edit">Edit</button>
                 <button onclick="deleteEntry(${index})" class="btn btn-delete">Delete</button>
-                <button onclick="duplicateEntry(${index})" class="btn btn-duplicate">Duplicate</button>
-                <button onclick="hideEntry(${index})" class="btn btn-hide">Hide</button>
                 <button onclick="hideFromUsers(${index})" class="btn btn-hide-users">Hide Users</button>
             </td>
         `;
@@ -432,95 +198,10 @@ function formatNumber(num) {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-// Show add form
-function showAddForm() {
-    document.getElementById("add-form").style.display = "block";
-    document.getElementById("edit-index").value = "-1";
-    clearForm();
-}
-
 // Edit entry
 function editEntry(index) {
-    const entry = inventory[index];
-    
-    // Set form values
-    document.getElementById("form-project").value = entry.project;
-    document.getElementById("form-site").value = entry.site;
-    document.getElementById("form-unit-type").value = entry.unitType;
-    document.getElementById("form-block").value = entry.block;
-    document.getElementById("form-lt").value = entry.lt;
-    document.getElementById("form-lot-area").value = entry.lotArea;
-    document.getElementById("form-house-type").value = entry.houseType;
-    document.getElementById("form-contract-price").value = entry.contractPrice;
-    document.getElementById("form-pc1").value = entry.pc1;
-    document.getElementById("form-pc2").value = entry.pc2;
-    document.getElementById("form-too").value = entry.too;
-    document.getElementById("form-dp").value = entry.dp;
-    document.getElementById("form-reservation-fee").value = entry.reservationFee;
-    document.getElementById("form-equity-promo").value = entry.equityPromo;
-    document.getElementById("form-equity-payment").value = entry.equityPayment;
-    document.getElementById("form-term").value = entry.term;
-    document.getElementById("form-monthly-equity").value = entry.monthlyEquity;
-    document.getElementById("form-loan-amount").value = entry.loanAmount;
-    document.getElementById("form-ma-hdmf").value = entry.maHdmf;
-    document.getElementById("form-gmi-hdmf").value = entry.gmiHdmf;
-    document.getElementById("form-ma-bdo").value = entry.maBdo;
-    document.getElementById("form-gmi-bdo").value = entry.gmiBdo;
-    document.getElementById("form-ma-rcbc").value = entry.maRcbc;
-    document.getElementById("form-gmi-rcbc").value = entry.gmiRcbc;
-    document.getElementById("form-status").value = entry.status;
-    
-    document.getElementById("edit-index").value = index;
-    document.getElementById("add-form").style.display = "block";
-}
-
-// Save entry
-function saveEntry() {
-    const index = parseInt(document.getElementById("edit-index").value);
-    const entry = {
-        project: document.getElementById("form-project").value,
-        site: document.getElementById("form-site").value,
-        unitType: document.getElementById("form-unit-type").value,
-        block: document.getElementById("form-block").value,
-        lt: document.getElementById("form-lt").value,
-        lotArea: parseFloat(document.getElementById("form-lot-area").value) || 0,
-        houseType: document.getElementById("form-house-type").value,
-        contractPrice: parseFloat(document.getElementById("form-contract-price").value) || 0,
-        pc1: parseFloat(document.getElementById("form-pc1").value) || 0,
-        pc2: parseFloat(document.getElementById("form-pc2").value) || 0,
-        too: parseFloat(document.getElementById("form-too").value) || 0,
-        dp: parseFloat(document.getElementById("form-dp").value) || 0,
-        reservationFee: parseFloat(document.getElementById("form-reservation-fee").value) || 0,
-        equityPromo: parseFloat(document.getElementById("form-equity-promo").value) || 0,
-        equityPayment: parseFloat(document.getElementById("form-equity-payment").value) || 0,
-        term: parseInt(document.getElementById("form-term").value) || 0,
-        monthlyEquity: parseFloat(document.getElementById("form-monthly-equity").value) || 0,
-        loanAmount: parseFloat(document.getElementById("form-loan-amount").value) || 0,
-        maHdmf: parseFloat(document.getElementById("form-ma-hdmf").value) || 0,
-        gmiHdmf: parseFloat(document.getElementById("form-gmi-hdmf").value) || 0,
-        maBdo: parseFloat(document.getElementById("form-ma-bdo").value) || 0,
-        gmiBdo: parseFloat(document.getElementById("form-gmi-bdo").value) || 0,
-        maRcbc: parseFloat(document.getElementById("form-ma-rcbc").value) || 0,
-        gmiRcbc: parseFloat(document.getElementById("form-gmi-rcbc").value) || 0,
-        status: document.getElementById("form-status").value
-    };
-    
-    if(!entry.project || !entry.site || !entry.unitType) {
-        alert("Please fill required fields: Project, Site, and Unit Type");
-        return;
-    }
-    
-    if(index >= 0) {
-        // Update existing entry
-        inventory[index] = entry;
-    } else {
-        // Add new entry
-        inventory.push(entry);
-    }
-    
-    localStorage.setItem("inventory", JSON.stringify(inventory));
-    document.getElementById("add-form").style.display = "none";
-    loadInventory();
+    // Implementation would go here
+    alert("Edit functionality for entry at index " + index);
 }
 
 // Delete entry
@@ -532,45 +213,12 @@ function deleteEntry(index) {
     }
 }
 
-// Duplicate entry
-function duplicateEntry(index) {
-    if(index >= 0) {
-        const entry = JSON.parse(JSON.stringify(inventory[index]));
-        entry.lt = (parseInt(entry.lt) + 1).toString(); // Increment lot number
-        inventory.push(entry);
-        localStorage.setItem("inventory", JSON.stringify(inventory));
-        loadInventory();
-    }
-}
-
-// Hide entry (admin only)
-function hideEntry(index) {
-    inventory[index].hidden = true;
-    localStorage.setItem("inventory", JSON.stringify(inventory));
-    loadInventory();
-}
-
 // Hide from users
 function hideFromUsers(index) {
     inventory[index].hiddenFromUsers = true;
     localStorage.setItem("inventory", JSON.stringify(inventory));
     loadInventory();
-}
-
-// Cancel edit
-function cancelEdit() {
-    document.getElementById("add-form").style.display = "none";
-}
-
-// Clear form
-function clearForm() {
-    const form = document.getElementById("add-form");
-    const inputs = form.querySelectorAll("input, select");
-    inputs.forEach(input => {
-        if(input.type !== "button" && input.type !== "submit" && input.type !== "hidden") {
-            input.value = "";
-        }
-    });
+    alert("This entry will now be hidden from regular users");
 }
 
 // Save all data
@@ -581,25 +229,8 @@ function saveData() {
 
 // Export to CSV
 function exportToCSV() {
-    let csv = "Project,Site,Unit Type,Blk,Lt,Lot Area,House Type,Contract Price,PC1,PC2,TOO,DP,Reservation Fee,Equity Promo,Equity Payment,Term,Monthly Equity,Loan Amount,MA (HDMF),GMI (HDMF),MA (BDO),GMI (BDO),MA (RCBC),GMI (RCBC),Status\n";
-    
-    inventory.forEach(entry => {
-        csv += `"${entry.project}","${entry.site}","${entry.unitType}","${entry.block}","${entry.lt}",`;
-        csv += `"${entry.lotArea}","${entry.houseType}","${entry.contractPrice}","${entry.pc1}","${entry.pc2}",`;
-        csv += `"${entry.too}","${entry.dp}","${entry.reservationFee}","${entry.equityPromo}","${entry.equityPayment}",`;
-        csv += `"${entry.term}","${entry.monthlyEquity}","${entry.loanAmount}","${entry.maHdmf}","${entry.gmiHdmf}",`;
-        csv += `"${entry.maBdo}","${entry.gmiBdo}","${entry.maRcbc}","${entry.gmiRcbc}","${entry.status}"\n`;
-    });
-    
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", "inventory_export.csv");
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Implementation would go here
+    alert("Export to CSV functionality");
 }
 
 // Logout function
