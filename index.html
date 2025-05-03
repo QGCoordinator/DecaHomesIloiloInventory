@@ -334,6 +334,30 @@
             padding: 5px 8px;
             font-size: 12px;
         }
+
+        /* Sync status styles */
+        .sync-status {
+            margin: 10px 0;
+            padding: 8px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .sync-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .sync-error {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .sync-loading {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
     </style>
 </head>
 <body>
@@ -355,6 +379,9 @@
         <button onclick="logout()" style="float:right;" class="btn btn-delete">Logout</button>
     </h2>
     
+    <!-- Sync Status -->
+    <div id="sync-status" class="sync-status hidden"></div>
+    
     <!-- Tabs -->
     <div class="tabs">
         <button class="tab active" onclick="switchTab('projects-tab')">Inventory</button>
@@ -372,6 +399,7 @@
             <button onclick="showManageEntries()" class="btn">Manage Entries</button>
             <button onclick="saveData()" class="btn">Save All Data</button>
             <button onclick="exportToCSV()" class="btn">Export to CSV</button>
+            <button onclick="syncWithGoogleSheets()" class="btn">Sync with Google Sheets</button>
         </div>
         
         <!-- Add/Edit Form -->
@@ -748,6 +776,9 @@
 </div>
 
 <script>
+// Google Sheets API endpoint
+const GOOGLE_SHEETS_API = "https://script.google.com/macros/s/AKfycbwBH5O9l0kVPQGrVRH505ieVvLx9yaPW8vrhIAFGXG2FqWkfj4i0fFV0jHK5Bh_uomQ/exec";
+
 // Admin credentials
 const ADMIN = {
     username: "admin",
@@ -1778,6 +1809,135 @@ function deleteUser(index) {
     }
 }
 
+// Google Sheets Integration Functions
+function syncWithGoogleSheets() {
+    const syncStatus = document.getElementById("sync-status");
+    syncStatus.style.display = "block";
+    syncStatus.className = "sync-status sync-loading";
+    syncStatus.textContent = "Syncing with Google Sheets...";
+    
+    // Prepare data to send
+    const data = {
+        action: "syncData",
+        inventory: inventory,
+        bulletinEntries: bulletinEntries,
+        salesData: salesData,
+        users: USERS
+    };
+    
+    fetch(GOOGLE_SHEETS_API, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            syncStatus.className = "sync-status sync-success";
+            syncStatus.textContent = "Sync successful! Data saved to Google Sheets.";
+            
+            // Update local data with any changes from the server
+            if (data.inventory) {
+                inventory = data.inventory;
+                localStorage.setItem("inventory", JSON.stringify(inventory));
+                loadInventory();
+            }
+            if (data.bulletinEntries) {
+                bulletinEntries = data.bulletinEntries;
+                localStorage.setItem("bulletinEntries", JSON.stringify(bulletinEntries));
+                renderBulletin();
+            }
+            if (data.salesData) {
+                salesData = data.salesData;
+                localStorage.setItem("salesData", JSON.stringify(salesData));
+                renderSalesReport();
+            }
+            if (data.users) {
+                USERS = data.users;
+                localStorage.setItem("users", JSON.stringify(USERS));
+                renderUsersList();
+            }
+        } else {
+            syncStatus.className = "sync-status sync-error";
+            syncStatus.textContent = "Sync failed: " + (data.message || "Unknown error");
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        syncStatus.className = "sync-status sync-error";
+        syncStatus.textContent = "Sync failed: " + error.message;
+    })
+    .finally(() => {
+        setTimeout(() => {
+            syncStatus.style.display = "none";
+        }, 5000);
+    });
+}
+
+// Load data from Google Sheets
+function loadFromGoogleSheets() {
+    const syncStatus = document.getElementById("sync-status");
+    syncStatus.style.display = "block";
+    syncStatus.className = "sync-status sync-loading";
+    syncStatus.textContent = "Loading data from Google Sheets...";
+    
+    fetch(GOOGLE_SHEETS_API + "?action=getData")
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            syncStatus.className = "sync-status sync-success";
+            syncStatus.textContent = "Data loaded successfully from Google Sheets!";
+            
+            // Update local data
+            if (data.inventory) {
+                inventory = data.inventory;
+                localStorage.setItem("inventory", JSON.stringify(inventory));
+                loadInventory();
+            }
+            if (data.bulletinEntries) {
+                bulletinEntries = data.bulletinEntries;
+                localStorage.setItem("bulletinEntries", JSON.stringify(bulletinEntries));
+                renderBulletin();
+            }
+            if (data.salesData) {
+                salesData = data.salesData;
+                localStorage.setItem("salesData", JSON.stringify(salesData));
+                renderSalesReport();
+            }
+            if (data.users) {
+                USERS = data.users;
+                localStorage.setItem("users", JSON.stringify(USERS));
+                renderUsersList();
+            }
+        } else {
+            syncStatus.className = "sync-status sync-error";
+            syncStatus.textContent = "Load failed: " + (data.message || "Unknown error");
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        syncStatus.className = "sync-status sync-error";
+        syncStatus.textContent = "Load failed: " + error.message;
+    })
+    .finally(() => {
+        setTimeout(() => {
+            syncStatus.style.display = "none";
+        }, 5000);
+    });
+}
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     if(localStorage.getItem("loggedIn")) {
@@ -1802,6 +1962,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     if(!localStorage.getItem("users")) {
         localStorage.setItem("users", JSON.stringify(USERS));
+    }
+    
+    // Load data from Google Sheets on startup if online
+    if (navigator.onLine) {
+        loadFromGoogleSheets();
     }
 });
 </script>
