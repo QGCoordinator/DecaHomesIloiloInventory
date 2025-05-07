@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Housing Project Submission</title>
+    <title>Housing Project Management</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,7 +12,7 @@
             background-color: #f4f4f4;
         }
         .container {
-            width: 60%;
+            width: 80%;
             margin: 50px auto;
             padding: 20px;
             background-color: #fff;
@@ -21,6 +21,30 @@
         h2 {
             text-align: center;
             margin-bottom: 20px;
+        }
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            margin-right: 5px;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+        .tab.active {
+            background-color: #45a049;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
         }
         .form-group {
             margin-bottom: 15px;
@@ -62,65 +86,171 @@
             background-color: #f44336;
             color: white;
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Housing Project Submission Form</h2>
-    <form id="project-form">
-        <div class="form-group">
-            <label for="project">Project Name:</label>
-            <input type="text" id="project" name="project" required>
-        </div>
-        <div class="form-group">
-            <label for="site">Site:</label>
-            <input type="text" id="site" name="site" required>
-        </div>
-        <div class="form-group">
-            <label for="unitType">Unit Type:</label>
-            <input type="text" id="unitType" name="unitType" required>
-        </div>
-        <div class="form-group">
-            <label for="block">Block:</label>
-            <input type="text" id="block" name="block" required>
-        </div>
-        <div class="form-group">
-            <label for="lot">Lot:</label>
-            <input type="text" id="lot" name="lot" required>
-        </div>
-        <div class="form-group">
-            <label for="contractPrice">Contract Price:</label>
-            <input type="number" id="contractPrice" name="contractPrice" required>
-        </div>
-        <div class="form-group">
-            <label for="status">Status:</label>
-            <select id="status" name="status" required>
-                <option value="available">Available</option>
-                <option value="reserved">Reserved</option>
-                <option value="sold">Sold</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <button type="submit">Submit</button>
-        </div>
-    </form>
+    <h2>Housing Project Management</h2>
 
-    <div id="success-message" class="success-message">
-        Your project has been submitted successfully.
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('inventory-tab')">Inventory</button>
+        <button class="tab" onclick="switchTab('loan-calculator-tab')">Loan Calculator</button>
+        <button class="tab" onclick="switchTab('sold-units-tab')">Sold Units</button>
+        <button class="tab" onclick="switchTab('user-tab')">Users</button>
     </div>
 
-    <div id="error-message" class="error-message">
-        There was an error submitting your project. Please try again.
+    <!-- Inventory Tab -->
+    <div id="inventory-tab" class="tab-content active">
+        <h3>Inventory</h3>
+        <form id="project-form">
+            <div class="form-group">
+                <label for="project">Project Name:</label>
+                <input type="text" id="project" name="project" required>
+            </div>
+            <div class="form-group">
+                <label for="site">Site:</label>
+                <input type="text" id="site" name="site" required>
+            </div>
+            <div class="form-group">
+                <label for="unitType">Unit Type:</label>
+                <input type="text" id="unitType" name="unitType" required>
+            </div>
+            <div class="form-group">
+                <label for="block">Block:</label>
+                <input type="text" id="block" name="block" required>
+            </div>
+            <div class="form-group">
+                <label for="lot">Lot:</label>
+                <input type="text" id="lot" name="lot" required>
+            </div>
+            <div class="form-group">
+                <label for="contractPrice">Contract Price:</label>
+                <input type="number" id="contractPrice" name="contractPrice" required>
+            </div>
+            <div class="form-group">
+                <label for="status">Status:</label>
+                <select id="status" name="status" required>
+                    <option value="available">Available</option>
+                    <option value="reserved">Reserved</option>
+                    <option value="sold">Sold</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+
+        <div id="success-message" class="success-message">
+            Your project has been submitted successfully.
+        </div>
+
+        <div id="error-message" class="error-message">
+            There was an error submitting your project. Please try again.
+        </div>
+    </div>
+
+    <!-- Loan Calculator Tab -->
+    <div id="loan-calculator-tab" class="tab-content">
+        <h3>Loan Calculator</h3>
+        <div class="form-group">
+            <label for="loanAmount">Loan Amount:</label>
+            <input type="number" id="loanAmount" required>
+        </div>
+        <div class="form-group">
+            <label for="interestRate">Interest Rate (%):</label>
+            <input type="number" id="interestRate" required>
+        </div>
+        <div class="form-group">
+            <label for="loanTerm">Loan Term (years):</label>
+            <input type="number" id="loanTerm" required>
+        </div>
+        <div class="form-group">
+            <button onclick="calculateLoan()">Calculate</button>
+        </div>
+        <div id="loan-result">
+            <!-- Results will be shown here -->
+        </div>
+    </div>
+
+    <!-- Sold Units Tab -->
+    <div id="sold-units-tab" class="tab-content">
+        <h3>Sold Units</h3>
+        <table id="sold-units-table">
+            <thead>
+                <tr>
+                    <th>Project</th>
+                    <th>Site</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Sold unit data will be dynamically populated -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Users Tab -->
+    <div id="user-tab" class="tab-content">
+        <h3>Users</h3>
+        <p>User management will be implemented here.</p>
     </div>
 </div>
 
 <script>
-// Submit form data to Google Apps Script endpoint
-document.getElementById('project-form').addEventListener('submit', function(event) {
+// Function to switch between tabs
+function switchTab(tabId) {
+    document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
+    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+
+    document.getElementById(tabId).classList.add("active");
+    document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add("active");
+}
+
+// Loan Calculation Logic
+function calculateLoan() {
+    const amount = document.getElementById("loanAmount").value;
+    const rate = document.getElementById("interestRate").value / 100;
+    const term = document.getElementById("loanTerm").value;
+
+    if (!amount || !rate || !term) {
+        alert("Please fill all fields.");
+        return;
+    }
+
+    const monthlyRate = rate / 12;
+    const payments = term * 12;
+    const monthly = (amount * monthlyRate * Math.pow(1 + monthlyRate, payments)) / (Math.pow(1 + monthlyRate, payments) - 1);
+    const totalPayment = monthly * payments;
+    const totalInterest = totalPayment - amount;
+
+    document.getElementById("loan-result").innerHTML = `
+        <p>Monthly Amortization: ₱${monthly.toFixed(2)}</p>
+        <p>Total Interest: ₱${totalInterest.toFixed(2)}</p>
+        <p>Total Payment: ₱${totalPayment.toFixed(2)}</p>
+    `;
+}
+
+// Submit Housing Project Form
+document.getElementById('project-form').addEventListener('submit', function (event) {
     event.preventDefault();
 
-    // Get form values
     const formData = {
         project: document.getElementById('project').value,
         site: document.getElementById('site').value,
@@ -131,28 +261,24 @@ document.getElementById('project-form').addEventListener('submit', function(even
         status: document.getElementById('status').value
     };
 
-    // Send data to Google Apps Script endpoint using fetch
     fetch('https://script.google.com/macros/s/AKfycbz0cm8rB7tOh_nHY7Fxje7f5paFB9pypAxiYDEWgpAEwlVvfidgZ3p0XSezGaqI1ivG/exec', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify([formData])  // Send data as an array of objects
+        body: JSON.stringify([formData])
     })
-    .then(response => response.text())  // Convert response to text
+    .then(response => response.text())
     .then(responseText => {
         if (responseText.trim() === 'Success') {
-            // Show success message
             document.getElementById('success-message').style.display = 'block';
             document.getElementById('error-message').style.display = 'none';
         } else {
-            // Show error message
             document.getElementById('success-message').style.display = 'none';
             document.getElementById('error-message').style.display = 'block';
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         document.getElementById('success-message').style.display = 'none';
         document.getElementById('error-message').style.display = 'block';
     });
