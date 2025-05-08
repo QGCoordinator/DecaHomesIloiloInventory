@@ -432,7 +432,7 @@ document.getElementById('login-form').addEventListener('submit', function(event)
         // Successful login
         localStorage.setItem('loggedIn', 'true');
         localStorage.setItem('userRole', user.role);
-        showMainContent();
+        showMainContent(user.role);  // Pass the role to show relevant content
     } else {
         // Invalid login
         errorMessage.style.display = 'block';
@@ -440,21 +440,30 @@ document.getElementById('login-form').addEventListener('submit', function(event)
 });
 
 // Show main content after login
-function showMainContent() {
-    const userRole = localStorage.getItem('userRole');
+function showMainContent(userRole) {
     document.getElementById('login-section').style.display = 'none';
     document.getElementById('main-content-section').style.display = 'block';
 
-    // Admin access
+    // Check the user role and display content accordingly
     if (userRole === 'admin') {
+        // Admin can access everything, show all sections
         document.querySelectorAll(".admin-only").forEach(el => el.classList.remove('hidden'));
-    } else {
+    } else if (userRole === 'user') {
+        // User can only access certain sections, hide admin-only sections
         document.querySelectorAll(".admin-only").forEach(el => el.classList.add('hidden'));
     }
 }
 
-// Switch tabs
+// Switch tabs based on role
 function switchTab(tabId) {
+    const userRole = localStorage.getItem('userRole');
+    
+    // Ensure users can't access Admin-only tabs (like User Management, Inventory Settings)
+    if (userRole === 'user' && (tabId === 'user-tab' || tabId === 'inventory-tab')) {
+        alert("You do not have permission to access this section.");
+        return;
+    }
+
     document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
     document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
 
@@ -462,159 +471,11 @@ function switchTab(tabId) {
     document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add("active");
 }
 
-// Loan calculation
-function calculateLoan() {
-    const amount = document.getElementById("loanAmount").value;
-    const rate = document.getElementById("interestRate").value / 100;
-    const term = document.getElementById("loanTerm").value;
-
-    if (!amount || !rate || !term) {
-        alert("Please fill all fields.");
-        return;
-    }
-
-    const monthlyRate = rate / 12;
-    const payments = term * 12;
-    const monthly = (amount * monthlyRate * Math.pow(1 + monthlyRate, payments)) / (Math.pow(1 + monthlyRate, payments) - 1);
-    const totalPayment = monthly * payments;
-    const totalInterest = totalPayment - amount;
-
-    document.getElementById("loan-result").innerHTML = `
-        <p>Monthly Amortization: ₱${monthly.toFixed(2)}</p>
-        <p>Total Interest: ₱${totalInterest.toFixed(2)}</p>
-        <p>Total Payment: ₱${totalPayment.toFixed(2)}</p>
-    `;
+// On page load, check if the user is logged in
+if (localStorage.getItem('loggedIn') === 'true') {
+    const userRole = localStorage.getItem('userRole');
+    showMainContent(userRole);
 }
-
-// Submit Inventory Form
-document.getElementById('project-form').addEventListener('submit', function(event) {
-    event.preventDefault();
-
-    const formData = {
-        project: document.getElementById('project').value,
-        site: document.getElementById('site').value,
-        unitType: document.getElementById('unitType').value,
-        block: document.getElementById('block').value,
-        lot: document.getElementById('lot').value,
-        lotArea: document.getElementById('lotArea').value,
-        houseType: document.getElementById('houseType').value,
-        contractPrice: document.getElementById('contractPrice').value,
-        pc1: document.getElementById('pc1').value,
-        pc2: document.getElementById('pc2').value,
-        too: document.getElementById('too').value,
-        dp: document.getElementById('dp').value,
-        reservation: document.getElementById('reservation').value,
-        equityPromo: document.getElementById('equityPromo').value,
-        equityPayment: document.getElementById('equityPayment').value,
-        term: document.getElementById('term').value,
-        monthlyEquity: document.getElementById('monthlyEquity').value,
-        loanAmount: document.getElementById('loanAmount').value,
-        maHdmf: document.getElementById('maHdmf').value,
-        gmiHdmf: document.getElementById('gmiHdmf').value,
-        maBdo: document.getElementById('maBdo').value,
-        gmiBdo: document.getElementById('gmiBdo').value,
-        maRcBc: document.getElementById('maRcBc').value,
-        gmiRcBc: document.getElementById('gmiRcBc').value,
-        status: document.getElementById('status').value,
-    };
-
-    fetch('https://script.google.com/macros/s/AKfycbz0cm8rB7tOh_nHY7Fxje7f5paFB9pypAxiYDEWgpAEwlVvfidgZ3p0XSezGaqI1ivG/exec', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify([formData])
-    })
-    .then(response => response.text())
-    .then(responseText => {
-        if (responseText.trim() === 'Success') {
-            document.getElementById('success-message').style.display = 'block';
-            document.getElementById('error-message').style.display = 'none';
-        } else {
-            document.getElementById('success-message').style.display = 'none';
-            document.getElementById('error-message').style.display = 'block';
-        }
-    })
-    .catch(error => {
-        document.getElementById('success-message').style.display = 'none';
-        document.getElementById('error-message').style.display = 'block';
-    });
-});
-
-// Add Sold Unit
-document.getElementById('sold-unit-form').addEventListener('submit', function(event) {
-    event.preventDefault();
-
-    const soldUnitData = {
-        date: document.getElementById('sold-unit-date').value,
-        agent: document.getElementById('sold-unit-agent').value,
-        project: document.getElementById('sold-unit-project').value,
-        blockLot: document.getElementById('sold-unit-block-lot').value
-    };
-
-    const soldUnitsTableBody = document.getElementById('sold-units-table-body');
-    const newRow = soldUnitsTableBody.insertRow();
-    newRow.innerHTML = `
-        <td>${soldUnitData.date}</td>
-        <td>${soldUnitData.agent}</td>
-        <td>${soldUnitData.project}</td>
-        <td>${soldUnitData.blockLot}</td>
-        <td><button onclick="removeSoldUnit(this)">Delete</button></td>
-    `;
-
-    // Clear form fields
-    document.getElementById('sold-unit-form').reset();
-});
-
-// Remove Sold Unit
-function removeSoldUnit(button) {
-    const row = button.closest('tr');
-    row.remove();
-}
-
-// Manage Users
-document.getElementById('add-user-form').addEventListener('submit', function(event) {
-    event.preventDefault();
-
-    const newUser = {
-        username: document.getElementById('new-username').value,
-        password: document.getElementById('new-password').value,
-        role: document.getElementById('new-role').value
-    };
-
-    users.push(newUser);
-    populateUsersTable();
-});
-
-// Populate Users Table
-function populateUsersTable() {
-    const usersTableBody = document.getElementById('users-table-body');
-    usersTableBody.innerHTML = '';
-
-    users.forEach(user => {
-        const row = usersTableBody.insertRow();
-        row.innerHTML = `
-            <td>${user.username}</td>
-            <td>${user.password}</td>
-            <td>${user.role}</td>
-            <td><button onclick="editUser(${users.indexOf(user)})">Edit</button></td>
-        `;
-    });
-}
-
-// Edit User
-function editUser(index) {
-    const user = users[index];
-    document.getElementById('new-username').value = user.username;
-    document.getElementById('new-password').value = user.password;
-    document.getElementById('new-role').value = user.role;
-
-    users.splice(index, 1);
-    populateUsersTable();
-}
-
-// Initial population of users
-populateUsersTable();
 </script>
 
 </body>
