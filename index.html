@@ -348,13 +348,32 @@
     <!-- Users Tab -->
     <div id="user-tab" class="tab-content">
         <h3>Users</h3>
-        <p>User management will be implemented here.</p>
+        <table id="users-table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Password</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="users-table-body">
+                <!-- Admin and User data will appear here -->
+            </tbody>
+        </table>
     </div>
 </div>
 
 <script>
 // Admin credentials
 const adminCredentials = { username: 'admin', password: 'DecaHomesIloiloUm6' };
+const userCredentials = { username: 'user', password: 'userpassword' };
+
+// Users data (for demo)
+const users = [
+    { username: 'admin', password: 'DecaHomesIloiloUm6', role: 'admin' },
+    { username: 'user', password: 'userpassword', role: 'user' }
+];
 
 document.getElementById('login-form').addEventListener('submit', function(event) {
     event.preventDefault();
@@ -363,10 +382,13 @@ document.getElementById('login-form').addEventListener('submit', function(event)
     const password = document.getElementById('password').value;
     const errorMessage = document.getElementById('login-error');
 
-    if (username === adminCredentials.username && password === adminCredentials.password) {
+    // Check user credentials
+    const user = users.find(u => u.username === username && u.password === password);
+
+    if (user) {
         // Successful login
         localStorage.setItem('loggedIn', 'true');
-        localStorage.setItem('userRole', 'admin');
+        localStorage.setItem('userRole', user.role);
         showMainContent();
     } else {
         // Invalid login
@@ -376,8 +398,16 @@ document.getElementById('login-form').addEventListener('submit', function(event)
 
 // Show main content after login
 function showMainContent() {
+    const userRole = localStorage.getItem('userRole');
     document.getElementById('login-section').style.display = 'none';
     document.getElementById('main-content-section').style.display = 'block';
+
+    // Admin access
+    if (userRole === 'admin') {
+        document.querySelectorAll(".admin-only").forEach(el => el.classList.remove('hidden'));
+    } else {
+        document.querySelectorAll(".admin-only").forEach(el => el.classList.add('hidden'));
+    }
 }
 
 // Switch tabs
