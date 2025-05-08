@@ -165,8 +165,80 @@
                 <input type="text" id="lot" name="lot" required>
             </div>
             <div class="form-group">
+                <label for="lotArea">Lot Area:</label>
+                <input type="number" id="lotArea" name="lotArea" required>
+            </div>
+            <div class="form-group">
+                <label for="houseType">House Type:</label>
+                <input type="text" id="houseType" name="houseType" required>
+            </div>
+            <div class="form-group">
                 <label for="contractPrice">Contract Price:</label>
                 <input type="number" id="contractPrice" name="contractPrice" required>
+            </div>
+            <div class="form-group">
+                <label for="pc1">PC1:</label>
+                <input type="text" id="pc1" name="pc1" required>
+            </div>
+            <div class="form-group">
+                <label for="pc2">PC2:</label>
+                <input type="text" id="pc2" name="pc2" required>
+            </div>
+            <div class="form-group">
+                <label for="too">TOO:</label>
+                <input type="text" id="too" name="too" required>
+            </div>
+            <div class="form-group">
+                <label for="dp">DP:</label>
+                <input type="number" id="dp" name="dp" required>
+            </div>
+            <div class="form-group">
+                <label for="reservation">Reservation:</label>
+                <input type="number" id="reservation" name="reservation" required>
+            </div>
+            <div class="form-group">
+                <label for="equityPromo">Equity Promo:</label>
+                <input type="number" id="equityPromo" name="equityPromo" required>
+            </div>
+            <div class="form-group">
+                <label for="equityPayment">Equity Payment:</label>
+                <input type="number" id="equityPayment" name="equityPayment" required>
+            </div>
+            <div class="form-group">
+                <label for="term">Term:</label>
+                <input type="number" id="term" name="term" required>
+            </div>
+            <div class="form-group">
+                <label for="monthlyEquity">Monthly Equity:</label>
+                <input type="number" id="monthlyEquity" name="monthlyEquity" required>
+            </div>
+            <div class="form-group">
+                <label for="loanAmount">Loan Amount:</label>
+                <input type="number" id="loanAmount" name="loanAmount" required>
+            </div>
+            <div class="form-group">
+                <label for="maHdmf">MA (HDMF):</label>
+                <input type="number" id="maHdmf" name="maHdmf" required>
+            </div>
+            <div class="form-group">
+                <label for="gmiHdmf">GMI (HDMF):</label>
+                <input type="number" id="gmiHdmf" name="gmiHdmf" required>
+            </div>
+            <div class="form-group">
+                <label for="maBdo">MA (BDO):</label>
+                <input type="number" id="maBdo" name="maBdo" required>
+            </div>
+            <div class="form-group">
+                <label for="gmiBdo">GMI (BDO):</label>
+                <input type="number" id="gmiBdo" name="gmiBdo" required>
+            </div>
+            <div class="form-group">
+                <label for="maRcBc">MA (RCBC):</label>
+                <input type="number" id="maRcBc" name="maRcBc" required>
+            </div>
+            <div class="form-group">
+                <label for="gmiRcBc">GMI (RCBC):</label>
+                <input type="number" id="gmiRcBc" name="gmiRcBc" required>
             </div>
             <div class="form-group">
                 <label for="status">Status:</label>
@@ -188,6 +260,43 @@
         <div id="error-message" class="error-message">
             There was an error submitting your project. Please try again.
         </div>
+
+        <!-- Inventory Data Table -->
+        <table id="inventory-table">
+            <thead>
+                <tr>
+                    <th>Project Name</th>
+                    <th>Site</th>
+                    <th>Unit Type</th>
+                    <th>Block</th>
+                    <th>Lot</th>
+                    <th>Lot Area</th>
+                    <th>House Type</th>
+                    <th>Contract Price</th>
+                    <th>PC1</th>
+                    <th>PC2</th>
+                    <th>TOO</th>
+                    <th>DP</th>
+                    <th>Reservation</th>
+                    <th>Equity Promo</th>
+                    <th>Equity Payment</th>
+                    <th>Term</th>
+                    <th>Monthly Equity</th>
+                    <th>Loan Amount</th>
+                    <th>MA (HDMF)</th>
+                    <th>GMI (HDMF)</th>
+                    <th>MA (BDO)</th>
+                    <th>GMI (BDO)</th>
+                    <th>MA (RCBC)</th>
+                    <th>GMI (RCBC)</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="inventory-table-body">
+                <!-- Inventory data rows will appear here -->
+            </tbody>
+        </table>
     </div>
 
     <!-- Loan Calculator Tab -->
@@ -239,7 +348,7 @@
 </div>
 
 <script>
-// Login function
+// Simple login credentials
 const adminCredentials = { username: 'admin', password: 'password' };
 
 document.getElementById('login-form').addEventListener('submit', function(event) {
@@ -309,8 +418,26 @@ document.getElementById('project-form').addEventListener('submit', function(even
         unitType: document.getElementById('unitType').value,
         block: document.getElementById('block').value,
         lot: document.getElementById('lot').value,
+        lotArea: document.getElementById('lotArea').value,
+        houseType: document.getElementById('houseType').value,
         contractPrice: document.getElementById('contractPrice').value,
-        status: document.getElementById('status').value
+        pc1: document.getElementById('pc1').value,
+        pc2: document.getElementById('pc2').value,
+        too: document.getElementById('too').value,
+        dp: document.getElementById('dp').value,
+        reservation: document.getElementById('reservation').value,
+        equityPromo: document.getElementById('equityPromo').value,
+        equityPayment: document.getElementById('equityPayment').value,
+        term: document.getElementById('term').value,
+        monthlyEquity: document.getElementById('monthlyEquity').value,
+        loanAmount: document.getElementById('loanAmount').value,
+        maHdmf: document.getElementById('maHdmf').value,
+        gmiHdmf: document.getElementById('gmiHdmf').value,
+        maBdo: document.getElementById('maBdo').value,
+        gmiBdo: document.getElementById('gmiBdo').value,
+        maRcBc: document.getElementById('maRcBc').value,
+        gmiRcBc: document.getElementById('gmiRcBc').value,
+        status: document.getElementById('status').value,
     };
 
     fetch('https://script.google.com/macros/s/AKfycbz0cm8rB7tOh_nHY7Fxje7f5paFB9pypAxiYDEWgpAEwlVvfidgZ3p0XSezGaqI1ivG/exec', {
