@@ -1,413 +1,471 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Housing Project Management</title>
+    <title>Housing Projects Management</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-
-        .container {
-            width: 80%;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h2 {
+        /* Login Styles */
+        .login-container {
+            max-width: 350px;
+            margin: 100px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
             text-align: center;
-            margin-bottom: 20px;
         }
-
-        .tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            margin-right: 5px;
-            font-size: 16px;
-            border-radius: 4px;
-        }
-
-        .tab.active {
-            background-color: #45a049;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: bold;
-        }
-
-        .form-group input, .form-group select {
+        .login-input {
             width: 100%;
-            padding: 10px;
-            margin-top: 5px;
+            padding: 12px;
+            margin: 10px 0;
             border: 1px solid #ddd;
             border-radius: 4px;
+            box-sizing: border-box;
         }
-
-        .form-group button {
-            padding: 10px 20px;
+        .login-btn {
+            width: 100%;
+            padding: 12px;
             background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
         }
-
-        .form-group button:hover {
-            background-color: #45a049;
-        }
-
-        .success-message, .error-message {
-            display: none;
-            padding: 10px;
-            margin-top: 20px;
-            text-align: center;
-            border-radius: 4px;
-        }
-
-        .success-message {
-            background-color: #4CAF50;
-            color: white;
-        }
-
         .error-message {
-            background-color: #f44336;
-            color: white;
+            color: #f44336;
+            margin: 10px 0;
+            display: none;
         }
 
+        /* Main Content Styles */
+        .hidden { display: none; }
+        .admin-only { display: none; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Table Styles */
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-
         th, td {
-            padding: 10px;
-            text-align: left;
             border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
         }
-
         th {
             background-color: #4CAF50;
             color: white;
+            position: relative;
         }
 
-        .hidden {
-            display: none;
+        /* Button Styles */
+        button {
+            padding: 5px 10px;
+            margin: 2px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+        }
+        .btn-primary { background-color: #4CAF50; color: white; }
+        .btn-secondary { background-color: #2196F3; color: white; }
+        .btn-danger { background-color: #f44336; color: white; }
+        .btn-warning { background-color: #ffc107; color: black; }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .currency-input {
+            position: relative;
+        }
+        .currency-input::before {
+            content: "₱";
+            position: absolute;
+            left: 5px;
+            top: 5px;
+        }
+        .currency-input input {
+            padding-left: 20px !important;
         }
 
-        .warning-message {
-            color: #ff9800;
+        /* Bulletin Styles */
+        .bulletin {
+            background-color: #fff8e1;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            border: 2px solid #ffc107;
+        }
+        .bulletin-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff6f00;
+            margin-bottom: 10px;
+        }
+        .bulletin-date {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .bulletin-agent {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .bulletin-unit {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+        .bulletin-congrats {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ff6f00;
+            margin-top: 15px;
+        }
+        .emoji {
+            font-size: 20px;
         }
 
+        /* Sales Report Styles */
+        .sales-report {
+            background-color: #e8f5e9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .sales-report-title {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #2e7d32;
+        }
+        .current-date {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        /* Search Styles */
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .search-box {
+            flex-grow: 1;
+            padding: 8px;
+        }
     </style>
 </head>
 <body>
 
 <!-- Login Section -->
-<div id="login-section" class="container">
-    <h2>Login</h2>
-    <form id="login-form">
-        <div class="form-group">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-        </div>
-        <div class="form-group">
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <div class="form-group">
-            <button type="submit">Login</button>
-        </div>
-    </form>
-    <div id="login-error" class="error-message">
-        Invalid username or password.
+<div id="login-section">
+    <div class="login-container">
+        <h2>Login</h2>
+        <div id="login-error" class="error-message">Invalid credentials</div>
+        <input type="text" id="username" class="login-input" placeholder="Username">
+        <input type="password" id="password" class="login-input" placeholder="Password">
+        <button onclick="login()" class="login-btn">Login</button>
     </div>
 </div>
 
-<!-- Main Content Section (Hidden until logged in) -->
-<div id="main-content-section" class="container hidden">
-    <h2>Housing Project Management</h2>
-
-    <!-- Log Out Button -->
-    <button id="logout-btn" onclick="logout()">Log Out</button>
-
+<!-- Main Content -->
+<div id="content-section" class="hidden">
+    <h2>Housing Projects Management
+        <button onclick="logout()" style="float:right;">Logout</button>
+    </h2>
+    
     <!-- Tabs -->
     <div class="tabs">
-        <button class="tab active" onclick="switchTab('inventory-tab')">Inventory</button>
-        <button class="tab" onclick="switchTab('loan-calculator-tab')">Loan Calculator</button>
-        <button class="tab" onclick="switchTab('sold-units-tab')">Sold Units</button>
-        <button class="tab" onclick="switchTab('user-tab')">Users</button>
+        <button class="tab active" onclick="switchTab('projects-tab')">Inventory</button>
+        <button class="tab" onclick="switchTab('calculator-tab')">Loan Calculator</button>
+        <button class="tab" onclick="switchTab('bulletin-tab')">Sold Units</button>
+        <button id="sales-tab-btn" class="tab admin-only" onclick="switchTab('sales-tab')">Sales Report</button>
     </div>
-
-    <!-- Inventory Tab -->
-    <div id="inventory-tab" class="tab-content active">
-        <h3>Inventory</h3>
-        <form id="project-form">
+    
+    <!-- Projects Tab -->
+    <div id="projects-tab" class="tab-content active">
+        <!-- Search Container -->
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-box" placeholder="Search projects...">
+            <button onclick="searchProjects()" class="btn-secondary">Search</button>
+        </div>
+        
+        <!-- Admin Controls -->
+        <div id="admin-controls" class="admin-only">
+            <button onclick="showAddForm()" class="btn-primary">Add New Project</button>
+            <button onclick="saveData()" class="btn-secondary">Save All Data</button>
+        </div>
+        
+        <!-- Add Project Form -->
+        <div id="add-form" class="admin-only hidden" style="margin: 20px 0; padding: 15px; background: #e6f7ff; border-radius: 5px;">
+            <h3>Add/Edit Project</h3>
             <div class="form-group">
-                <label for="project">Project Name:</label>
-                <input type="text" id="project" name="project" required>
+                <label>Project Name:</label>
+                <input type="text" id="form-name">
             </div>
             <div class="form-group">
-                <label for="site">Site:</label>
-                <input type="text" id="site" name="site" required>
+                <label>Site:</label>
+                <input type="text" id="form-site">
             </div>
             <div class="form-group">
-                <label for="unitType">Unit Type:</label>
-                <input type="text" id="unitType" name="unitType" required>
+                <label>Unit Type:</label>
+                <input type="text" id="form-unit-type">
             </div>
             <div class="form-group">
-                <label for="block">Block:</label>
-                <input type="text" id="block" name="block" required>
+                <label>Phase:</label>
+                <input type="text" id="form-phase">
             </div>
             <div class="form-group">
-                <label for="lot">Lot:</label>
-                <input type="text" id="lot" name="lot" required>
+                <label>Block:</label>
+                <input type="text" id="form-block">
             </div>
             <div class="form-group">
-                <label for="lotArea">Lot Area:</label>
-                <input type="number" id="lotArea" name="lotArea" required>
+                <label>Lot:</label>
+                <input type="text" id="form-lot">
+            </div>
+            <div class="form-group currency-input">
+                <label>Price:</label>
+                <input type="text" id="form-price" oninput="formatCurrency(this)">
+            </div>
+            <div class="form-group currency-input">
+                <label>Reservation Fee:</label>
+                <input type="text" id="form-reservation-fee" oninput="formatCurrency(this)">
+            </div>
+            <div class="form-group currency-input">
+                <label>Equity:</label>
+                <input type="text" id="form-equity" oninput="formatCurrency(this)">
+            </div>
+            <div class="form-group currency-input">
+                <label>Monthly Amortization:</label>
+                <input type="text" id="form-monthly" oninput="formatCurrency(this)">
             </div>
             <div class="form-group">
-                <label for="houseType">House Type:</label>
-                <input type="text" id="houseType" name="houseType" required>
-            </div>
-            <div class="form-group">
-                <label for="contractPrice">Contract Price:</label>
-                <input type="number" id="contractPrice" name="contractPrice" required>
-            </div>
-
-            <!-- Additional Fields -->
-            <div class="form-group">
-                <label for="pc1">PC1:</label>
-                <input type="text" id="pc1" name="pc1" required>
-            </div>
-            <div class="form-group">
-                <label for="pc2">PC2:</label>
-                <input type="text" id="pc2" name="pc2" required>
-            </div>
-            <div class="form-group">
-                <label for="too">TOO:</label>
-                <input type="text" id="too" name="too" required>
-            </div>
-            <div class="form-group">
-                <label for="dp">DP:</label>
-                <input type="number" id="dp" name="dp" required>
-            </div>
-            <div class="form-group">
-                <label for="reservation">Reservation:</label>
-                <input type="number" id="reservation" name="reservation" required>
-            </div>
-            <div class="form-group">
-                <label for="equityPromo">Equity Promo:</label>
-                <input type="number" id="equityPromo" name="equityPromo" required>
-            </div>
-            <div class="form-group">
-                <label for="equityPayment">Equity Payment:</label>
-                <input type="number" id="equityPayment" name="equityPayment" required>
-            </div>
-            <div class="form-group">
-                <label for="term">Term:</label>
-                <input type="number" id="term" name="term" required>
-            </div>
-            <div class="form-group">
-                <label for="monthlyEquity">Monthly Equity:</label>
-                <input type="number" id="monthlyEquity" name="monthlyEquity" required>
-            </div>
-            <div class="form-group">
-                <label for="loanAmount">Loan Amount:</label>
-                <input type="number" id="loanAmount" name="loanAmount" required>
-            </div>
-
-            <!-- Loan Specifics -->
-            <div class="form-group">
-                <label for="maHdmf">MA (HDMF):</label>
-                <input type="number" id="maHdmf" name="maHdmf" required>
-            </div>
-            <div class="form-group">
-                <label for="gmiHdmf">GMI (HDMF):</label>
-                <input type="number" id="gmiHdmf" name="gmiHdmf" required>
-            </div>
-            <div class="form-group">
-                <label for="maBdo">MA (BDO):</label>
-                <input type="number" id="maBdo" name="maBdo" required>
-            </div>
-            <div class="form-group">
-                <label for="gmiBdo">GMI (BDO):</label>
-                <input type="number" id="gmiBdo" name="gmiBdo" required>
-            </div>
-            <div class="form-group">
-                <label for="maRcBc">MA (RCBC):</label>
-                <input type="number" id="maRcBc" name="maRcBc" required>
-            </div>
-            <div class="form-group">
-                <label for="gmiRcBc">GMI (RCBC):</label>
-                <input type="number" id="gmiRcBc" name="gmiRcBc" required>
-            </div>
-            <div class="form-group">
-                <label for="status">Status:</label>
-                <select id="status" name="status" required>
+                <label>Status:</label>
+                <select id="form-status">
                     <option value="available">Available</option>
                     <option value="reserved">Reserved</option>
                     <option value="sold">Sold</option>
                 </select>
             </div>
-            <div class="form-group">
-                <button type="button" onclick="saveProjectData()">Submit</button>
-            </div>
-        </form>
-
-        <div id="success-message" class="success-message">
-            Your project has been submitted successfully.
+            <button onclick="saveProject()" class="btn-primary">Save</button>
+            <button onclick="cancelEdit()" class="btn-danger">Cancel</button>
+            <button onclick="duplicateProject()" class="btn-warning">Duplicate</button>
+            <input type="hidden" id="edit-index" value="-1">
         </div>
-
-        <div id="error-message" class="error-message">
-            There was an error submitting your project. Please try again.
-        </div>
-
-        <!-- Inventory Data Table -->
-        <table id="inventory-table">
+        
+        <!-- Projects Table -->
+        <table id="projects-table">
             <thead>
                 <tr>
-                    <th>Project Name</th>
+                    <th>Project</th>
                     <th>Site</th>
                     <th>Unit Type</th>
+                    <th>Phase</th>
                     <th>Block</th>
                     <th>Lot</th>
-                    <th>Lot Area</th>
-                    <th>House Type</th>
-                    <th>Contract Price</th>
-                    <th>PC1</th>
-                    <th>PC2</th>
-                    <th>TOO</th>
-                    <th>DP</th>
-                    <th>Reservation</th>
-                    <th>Equity Promo</th>
-                    <th>Equity Payment</th>
-                    <th>Term</th>
-                    <th>Monthly Equity</th>
-                    <th>Loan Amount</th>
-                    <th>MA (HDMF)</th>
-                    <th>GMI (HDMF)</th>
-                    <th>MA (BDO)</th>
-                    <th>GMI (BDO)</th>
-                    <th>MA (RCBC)</th>
-                    <th>GMI (RCBC)</th>
+                    <th>Price</th>
                     <th>Status</th>
-                    <th>Actions</th>
+                    <th class="admin-only">Actions</th>
                 </tr>
             </thead>
-            <tbody id="inventory-table-body">
-                <!-- Inventory data rows will appear here -->
+            <tbody>
+                <!-- Data will be loaded here -->
             </tbody>
         </table>
     </div>
+    
+    <!-- Calculator Tab -->
+    <div id="calculator-tab" class="tab-content">
+        <div style="background: #e6f7ff; padding: 15px; border-radius: 5px;">
+            <h3>Loan Calculator</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group currency-input">
+                    <label>Loan Amount:</label>
+                    <input type="text" id="loan-amount" oninput="formatCurrency(this)">
+                </div>
+                <div class="form-group">
+                    <label>Interest Rate (%):</label>
+                    <input type="number" id="interest-rate" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>Loan Term (years):</label>
+                    <input type="number" id="loan-term">
+                </div>
+                <div class="form-group">
+                    <label>Income Requirement (%):</label>
+                    <input type="number" id="income-percent" value="30">
+                </div>
+            </div>
+            <button onclick="calculateLoan()" class="btn-primary" style="margin-top: 10px;">Calculate</button>
+            
+            <div id="calculator-results" style="margin-top: 15px; display: none;">
+                <h4>Calculation Results</h4>
+                <p>Monthly Amortization: <span id="monthly-amortization"></span></p>
+                <p>Total Interest: <span id="total-interest"></span></p>
+                <p>Total Payment: <span id="total-payment"></span></p>
+                <p>Required Monthly Income: <span id="required-income"></span></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sold Units Bulletin Tab -->
+    <div id="bulletin-tab" class="tab-content">
+        <div id="bulletin-container">
+            <!-- Bulletin will be generated here -->
+        </div>
+        
+        <div id="bulletin-form" class="admin-only" style="margin-top: 30px; background: #e6f7ff; padding: 15px; border-radius: 5px;">
+            <h3>Add Sold Unit</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label>Date:</label>
+                    <input type="date" id="bulletin-date">
+                </div>
+                <div class="form-group">
+                    <label>Agent Name:</label>
+                    <input type="text" id="bulletin-agent">
+                </div>
+                <div class="form-group">
+                    <label>Project:</label>
+                    <input type="text" id="bulletin-project">
+                </div>
+                <div class="form-group">
+                    <label>Block-Lot:</label>
+                    <input type="text" id="bulletin-block-lot">
+                </div>
+            </div>
+            <button onclick="addBulletinEntry()" class="btn-primary" style="margin-top: 15px;">Add to Bulletin</button>
+        </div>
+        
+        <div id="bulletin-entries" class="admin-only" style="margin-top: 30px;">
+            <h3>Manage Bulletin Entries</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Agent</th>
+                        <th>Project</th>
+                        <th>Block-Lot</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="bulletin-entries-list">
+                    <!-- Bulletin entries will be listed here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Sales Report Tab -->
+    <div id="sales-tab" class="tab-content">
+        <div style="background: #e8f5e9; padding: 15px; border-radius: 5px;">
+            <div class="sales-report-title">Daily Sales Report Quintilla Group</div>
+            <div class="current-date" id="sales-report-date"></div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Team Name</th>
+                        <th>Quota (₱)</th>
+                        <th>Sales of the Day (₱)</th>
+                        <th>Balance (₱)</th>
+                        <th class="admin-only">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="sales-report-list">
+                    <!-- Sales data will be listed here -->
+                </tbody>
+            </table>
+            
+            <div id="sales-form" class="admin-only" style="margin-top: 20px; background: #e6f7ff; padding: 15px; border-radius: 5px;">
+                <h3>Add/Edit Sales Data</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Team Name:</label>
+                        <input type="text" id="sales-team">
+                    </div>
+                    <div class="form-group currency-input">
+                        <label>Quota:</label>
+                        <input type="text" id="sales-quota" oninput="formatCurrency(this)">
+                    </div>
+                    <div class="form-group currency-input">
+                        <label>Sales of the Day:</label>
+                        <input type="text" id="sales-today" oninput="formatCurrency(this)">
+                    </div>
+                </div>
+                <input type="hidden" id="sales-edit-index" value="-1">
+                <button onclick="saveSalesData()" class="btn-primary" style="margin-top: 15px;">Save</button>
+                <button onclick="cancelSalesEdit()" class="btn-danger">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
-// Admin credentials
-const adminCredentials = { username: 'admin', password: 'DecaHomesIloiloUm6' };
-const userCredentials = { username: 'user', password: 'userpassword' };
+// Google Sheets URL
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbz0cm8rB7tOh_nHY7Fxje7f5paFB9pypAxiYDEWgpAEwlVvfidgZ3p0XSezGaqI1ivG/exec";
 
-// Users data (for demo)
-const users = [
-    { username: 'admin', password: 'DecaHomesIloiloUm6', role: 'admin' },
-    { username: 'user', password: 'userpassword', role: 'user' }
-];
-
-document.getElementById('login-form').addEventListener('submit', function(event) {
-    event.preventDefault();
-
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    const errorMessage = document.getElementById('login-error');
-
-    // Check user credentials
-    const user = users.find(u => u.username === username && u.password === password);
-
-    if (user) {
-        // Successful login
-        localStorage.setItem('loggedIn', 'true');
-        localStorage.setItem('userRole', user.role);
-        showMainContent(user.role);  // Pass the role to show relevant content
-    } else {
-        // Invalid login
-        errorMessage.style.display = 'block';
-    }
-});
-
-// Show main content after login
-function showMainContent(userRole) {
-    document.getElementById('login-section').style.display = 'none';
-    document.getElementById('main-content-section').style.display = 'block';
-
-    // Check the user role and display content accordingly
-    if (userRole === 'admin') {
-        // Admin can access everything, show all sections
-        document.querySelectorAll(".admin-only").forEach(el => el.classList.remove('hidden'));
-    } else if (userRole === 'user') {
-        // User can only access certain sections, hide admin-only sections
-        document.querySelectorAll(".admin-only").forEach(el => el.classList.add('hidden'));
-    }
+// Fetch data from Google Sheets
+function fetchDataFromGoogleSheets(sheetName, callback) {
+    fetch(`${GOOGLE_SHEET_URL}?action=getData&sheet=${sheetName}`)
+        .then(response => response.json())
+        .then(data => callback(data))
+        .catch(error => console.error('Error fetching data:', error));
 }
 
-// Log out function
-function logout() {
-    localStorage.removeItem('loggedIn');
-    localStorage.removeItem('userRole');
-    document.getElementById('login-section').style.display = 'block';
-    document.getElementById('main-content-section').style.display = 'none';
+// Save data to Google Sheets
+function saveDataToGoogleSheets(sheetName, data) {
+    fetch(`${GOOGLE_SHEET_URL}?action=saveData&sheet=${sheetName}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ data: data })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Data saved:', data);
+    })
+    .catch(error => console.error('Error saving data:', error));
 }
 
-// Switch tabs based on role
-function switchTab(tabId) {
-    const userRole = localStorage.getItem('userRole');
-    
-    // Ensure users can't access Admin-only tabs (like User Management, Inventory Settings)
-    if (userRole === 'user' && (tabId === 'user-tab' || tabId === 'inventory-tab')) {
-        alert("You do not have permission to access this section.");
-        return;
-    }
+// Example of how to load projects from Google Sheets
+function loadProjects() {
+    fetchDataFromGoogleSheets("Projects", function(data) {
+        const tbody = document.querySelector("#projects-table tbody");
+        tbody.innerHTML = "";
 
-    document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
-    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
-
-    document.getElementById(tabId).classList.add("active");
-    document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add("active");
+        data.forEach((project, index) => {
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td>${project.name}</td>
+                <td>${project.site}</td>
+                <td>${project.unitType}</td>
+                <td>${project.phase}</td>
+                <td>${project.block}</td>
+                <td>${project.lot}</td>
+                <td>${formatAsPHP(project.price)}</td>
+                <td>${project.status}</td>
+                <td class="admin-only">
+                    <button onclick="editProject(${index})" class="btn-secondary">Edit</button>
+                    <button onclick="deleteProject(${index})" class="btn-danger">Delete</button>
+                </td>
+            `;
+        });
+    });
 }
 
-// On page load, check if the user is logged in
-if (localStorage.getItem('loggedIn') === 'true') {
-    const userRole = localStorage.getItem('userRole');
-    showMainContent(userRole);
-}
+// Other functions such as saveProject, deleteProject, etc., will work similarly as previously explained.
+
 </script>
-
 </body>
 </html>
