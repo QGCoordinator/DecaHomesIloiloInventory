@@ -177,7 +177,7 @@
                 <label for="contractPrice">Contract Price:</label>
                 <input type="number" id="contractPrice" name="contractPrice" required>
             </div>
-            
+
             <!-- Additional Fields -->
             <div class="form-group">
                 <label for="pc1">PC1:</label>
@@ -330,6 +330,24 @@
     <!-- Sold Units Tab -->
     <div id="sold-units-tab" class="tab-content">
         <h3>Sold Units</h3>
+        <form id="sold-unit-form">
+            <div class="form-group">
+                <label for="sold-unit-project">Project Name:</label>
+                <input type="text" id="sold-unit-project" name="sold-unit-project" required>
+            </div>
+            <div class="form-group">
+                <label for="sold-unit-site">Site:</label>
+                <input type="text" id="sold-unit-site" name="sold-unit-site" required>
+            </div>
+            <div class="form-group">
+                <label for="sold-unit-status">Status:</label>
+                <input type="text" id="sold-unit-status" name="sold-unit-status" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Add Sold Unit</button>
+            </div>
+        </form>
+
         <table id="sold-units-table">
             <thead>
                 <tr>
@@ -339,8 +357,8 @@
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- Sold unit data will be dynamically populated -->
+            <tbody id="sold-units-table-body">
+                <!-- Sold units data rows will appear here -->
             </tbody>
         </table>
     </div>
@@ -361,6 +379,26 @@
                 <!-- Admin and User data will appear here -->
             </tbody>
         </table>
+        <form id="add-user-form">
+            <div class="form-group">
+                <label for="new-username">Username:</label>
+                <input type="text" id="new-username" required>
+            </div>
+            <div class="form-group">
+                <label for="new-password">Password:</label>
+                <input type="password" id="new-password" required>
+            </div>
+            <div class="form-group">
+                <label for="new-role">Role:</label>
+                <select id="new-role" required>
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit">Add User</button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -497,6 +535,79 @@ document.getElementById('project-form').addEventListener('submit', function(even
         document.getElementById('error-message').style.display = 'block';
     });
 });
+
+// Add Sold Unit
+document.getElementById('sold-unit-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const soldUnitData = {
+        project: document.getElementById('sold-unit-project').value,
+        site: document.getElementById('sold-unit-site').value,
+        status: document.getElementById('sold-unit-status').value
+    };
+
+    const soldUnitsTableBody = document.getElementById('sold-units-table-body');
+    const newRow = soldUnitsTableBody.insertRow();
+    newRow.innerHTML = `
+        <td>${soldUnitData.project}</td>
+        <td>${soldUnitData.site}</td>
+        <td>${soldUnitData.status}</td>
+        <td><button onclick="removeSoldUnit(this)">Delete</button></td>
+    `;
+
+    // Clear form fields
+    document.getElementById('sold-unit-form').reset();
+});
+
+// Remove Sold Unit
+function removeSoldUnit(button) {
+    const row = button.closest('tr');
+    row.remove();
+}
+
+// Manage Users
+document.getElementById('add-user-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const newUser = {
+        username: document.getElementById('new-username').value,
+        password: document.getElementById('new-password').value,
+        role: document.getElementById('new-role').value
+    };
+
+    users.push(newUser);
+    populateUsersTable();
+});
+
+// Populate Users Table
+function populateUsersTable() {
+    const usersTableBody = document.getElementById('users-table-body');
+    usersTableBody.innerHTML = '';
+
+    users.forEach(user => {
+        const row = usersTableBody.insertRow();
+        row.innerHTML = `
+            <td>${user.username}</td>
+            <td>${user.password}</td>
+            <td>${user.role}</td>
+            <td><button onclick="editUser(${users.indexOf(user)})">Edit</button></td>
+        `;
+    });
+}
+
+// Edit User
+function editUser(index) {
+    const user = users[index];
+    document.getElementById('new-username').value = user.username;
+    document.getElementById('new-password').value = user.password;
+    document.getElementById('new-role').value = user.role;
+
+    users.splice(index, 1);
+    populateUsersTable();
+}
+
+// Initial population of users
+populateUsersTable();
 </script>
 
 </body>
