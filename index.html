@@ -332,16 +332,20 @@
         <h3>Sold Units</h3>
         <form id="sold-unit-form">
             <div class="form-group">
-                <label for="sold-unit-project">Project Name:</label>
+                <label for="sold-unit-date">Date:</label>
+                <input type="date" id="sold-unit-date" name="sold-unit-date" required>
+            </div>
+            <div class="form-group">
+                <label for="sold-unit-agent">Agent:</label>
+                <input type="text" id="sold-unit-agent" name="sold-unit-agent" required>
+            </div>
+            <div class="form-group">
+                <label for="sold-unit-project">Project:</label>
                 <input type="text" id="sold-unit-project" name="sold-unit-project" required>
             </div>
             <div class="form-group">
-                <label for="sold-unit-site">Site:</label>
-                <input type="text" id="sold-unit-site" name="sold-unit-site" required>
-            </div>
-            <div class="form-group">
-                <label for="sold-unit-status">Status:</label>
-                <input type="text" id="sold-unit-status" name="sold-unit-status" required>
+                <label for="sold-unit-block-lot">Block-Lot:</label>
+                <input type="text" id="sold-unit-block-lot" name="sold-unit-block-lot" required>
             </div>
             <div class="form-group">
                 <button type="submit">Add Sold Unit</button>
@@ -351,9 +355,10 @@
         <table id="sold-units-table">
             <thead>
                 <tr>
+                    <th>Date</th>
+                    <th>Agent</th>
                     <th>Project</th>
-                    <th>Site</th>
-                    <th>Status</th>
+                    <th>Block-Lot</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -541,17 +546,19 @@ document.getElementById('sold-unit-form').addEventListener('submit', function(ev
     event.preventDefault();
 
     const soldUnitData = {
+        date: document.getElementById('sold-unit-date').value,
+        agent: document.getElementById('sold-unit-agent').value,
         project: document.getElementById('sold-unit-project').value,
-        site: document.getElementById('sold-unit-site').value,
-        status: document.getElementById('sold-unit-status').value
+        blockLot: document.getElementById('sold-unit-block-lot').value
     };
 
     const soldUnitsTableBody = document.getElementById('sold-units-table-body');
     const newRow = soldUnitsTableBody.insertRow();
     newRow.innerHTML = `
+        <td>${soldUnitData.date}</td>
+        <td>${soldUnitData.agent}</td>
         <td>${soldUnitData.project}</td>
-        <td>${soldUnitData.site}</td>
-        <td>${soldUnitData.status}</td>
+        <td>${soldUnitData.blockLot}</td>
         <td><button onclick="removeSoldUnit(this)">Delete</button></td>
     `;
 
