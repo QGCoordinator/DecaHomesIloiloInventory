@@ -53,7 +53,8 @@
             display: block;
             font-weight: bold;
         }
-        .form-group input, .form-group select {
+        .form-group input,
+        .form-group select {
             width: 100%;
             padding: 10px;
             margin-top: 5px;
@@ -103,6 +104,9 @@
         .hidden {
             display: none;
         }
+        .warning-message {
+            color: #ff9800;
+        }
     </style>
 </head>
 <body>
@@ -147,7 +151,6 @@
     <div id="inventory-tab" class="tab-content active">
         <h3>Inventory</h3>
         <form id="project-form">
-            <!-- Project Details -->
             <div class="form-group">
                 <label for="project">Project Name:</label>
                 <input type="text" id="project" name="project" required>
