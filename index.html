@@ -132,6 +132,9 @@
 <div id="main-content-section" class="container hidden">
     <h2>Housing Project Management</h2>
 
+    <!-- Log Out Button -->
+    <button id="logout-btn" onclick="logout()">Log Out</button>
+
     <!-- Tabs -->
     <div class="tabs">
         <button class="tab active" onclick="switchTab('inventory-tab')">Inventory</button>
@@ -305,64 +308,81 @@
     </div>
 
 <script>
-// Google Sheets API URL (Your provided URL)
-const API_URL = 'https://script.google.com/macros/s/AKfycbz0cm8rB7tOh_nHY7Fxje7f5paFB9pypAxiYDEWgpAEwlVvfidgZ3p0XSezGaqI1ivG/exec';
+// Admin credentials
+const adminCredentials = { username: 'admin', password: 'DecaHomesIloiloUm6' };
+const userCredentials = { username: 'user', password: 'userpassword' };
 
-// Function to save project data to Google Sheets via the API
-function saveProjectData() {
-    const projectData = {
-        project: document.getElementById('project').value,
-        site: document.getElementById('site').value,
-        unitType: document.getElementById('unitType').value,
-        block: document.getElementById('block').value,
-        lot: document.getElementById('lot').value,
-        lotArea: document.getElementById('lotArea').value,
-        houseType: document.getElementById('houseType').value,
-        contractPrice: document.getElementById('contractPrice').value,
-        pc1: document.getElementById('pc1').value,
-        pc2: document.getElementById('pc2').value,
-        too: document.getElementById('too').value,
-        dp: document.getElementById('dp').value,
-        reservation: document.getElementById('reservation').value,
-        equityPromo: document.getElementById('equityPromo').value,
-        equityPayment: document.getElementById('equityPayment').value,
-        term: document.getElementById('term').value,
-        monthlyEquity: document.getElementById('monthlyEquity').value,
-        loanAmount: document.getElementById('loanAmount').value,
-        maHdmf: document.getElementById('maHdmf').value,
-        gmiHdmf: document.getElementById('gmiHdmf').value,
-        maBdo: document.getElementById('maBdo').value,
-        gmiBdo: document.getElementById('gmiBdo').value,
-        maRcBc: document.getElementById('maRcBc').value,
-        gmiRcBc: document.getElementById('gmiRcBc').value,
-        status: document.getElementById('status').value
-    };
+// Users data (for demo)
+const users = [
+    { username: 'admin', password: 'DecaHomesIloiloUm6', role: 'admin' },
+    { username: 'user', password: 'userpassword', role: 'user' }
+];
 
-    fetch(API_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify([projectData]) // Send data as JSON
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data === 'Success') {
-            document.getElementById('success-message').style.display = 'block';
-            document.getElementById('error-message').style.display = 'none';
-            clearForm();
-        } else {
-            document.getElementById('error-message').style.display = 'block';
-        }
-    })
-    .catch(error => {
-        document.getElementById('error-message').style.display = 'block';
-    });
+document.getElementById('login-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const errorMessage = document.getElementById('login-error');
+
+    // Check user credentials
+    const user = users.find(u => u.username === username && u.password === password);
+
+    if (user) {
+        // Successful login
+        localStorage.setItem('loggedIn', 'true');
+        localStorage.setItem('userRole', user.role);
+        showMainContent(user.role);  // Pass the role to show relevant content
+    } else {
+        // Invalid login
+        errorMessage.style.display = 'block';
+    }
+});
+
+// Show main content after login
+function showMainContent(userRole) {
+    document.getElementById('login-section').style.display = 'none';
+    document.getElementById('main-content-section').style.display = 'block';
+
+    // Check the user role and display content accordingly
+    if (userRole === 'admin') {
+        // Admin can access everything, show all sections
+        document.querySelectorAll(".admin-only").forEach(el => el.classList.remove('hidden'));
+    } else if (userRole === 'user') {
+        // User can only access certain sections, hide admin-only sections
+        document.querySelectorAll(".admin-only").forEach(el => el.classList.add('hidden'));
+    }
 }
 
-// Function to clear the form after submission
-function clearForm() {
-    document.getElementById('project-form').reset();
+// Log out function
+function logout() {
+    localStorage.removeItem('loggedIn');
+    localStorage.removeItem('userRole');
+    document.getElementById('login-section').style.display = 'block';
+    document.getElementById('main-content-section').style.display = 'none';
+}
+
+// Switch tabs based on role
+function switchTab(tabId) {
+    const userRole = localStorage.getItem('userRole');
+    
+    // Ensure users can't access Admin-only tabs (like User Management, Inventory Settings)
+    if (userRole === 'user' && (tabId === 'user-tab' || tabId === 'inventory-tab')) {
+        alert("You do not have permission to access this section.");
+        return;
+    }
+
+    document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
+    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+
+    document.getElementById(tabId).classList.add("active");
+    document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add("active");
+}
+
+// On page load, check if the user is logged in
+if (localStorage.getItem('loggedIn') === 'true') {
+    const userRole = localStorage.getItem('userRole');
+    showMainContent(userRole);
 }
 </script>
 
