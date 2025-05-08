@@ -254,7 +254,7 @@
                 </select>
             </div>
             <div class="form-group">
-                <button type="submit">Submit</button>
+                <button type="button" onclick="saveProjectData()">Submit</button>
             </div>
         </form>
 
@@ -304,177 +304,65 @@
         </table>
     </div>
 
-    <!-- Loan Calculator Tab -->
-    <div id="loan-calculator-tab" class="tab-content">
-        <h3>Loan Calculator</h3>
-        <div class="form-group">
-            <label for="loanAmount">Loan Amount:</label>
-            <input type="number" id="loanAmount" required>
-        </div>
-        <div class="form-group">
-            <label for="interestRate">Interest Rate (%):</label>
-            <input type="number" id="interestRate" required>
-        </div>
-        <div class="form-group">
-            <label for="loanTerm">Loan Term (years):</label>
-            <input type="number" id="loanTerm" required>
-        </div>
-        <div class="form-group">
-            <button onclick="calculateLoan()">Calculate</button>
-        </div>
-        <div id="loan-result">
-            <!-- Results will be shown here -->
-        </div>
-    </div>
-
-    <!-- Sold Units Tab -->
-    <div id="sold-units-tab" class="tab-content">
-        <h3>Sold Units</h3>
-        <form id="sold-unit-form">
-            <div class="form-group">
-                <label for="sold-unit-date">Date:</label>
-                <input type="date" id="sold-unit-date" name="sold-unit-date" required>
-            </div>
-            <div class="form-group">
-                <label for="sold-unit-agent">Agent:</label>
-                <input type="text" id="sold-unit-agent" name="sold-unit-agent" required>
-            </div>
-            <div class="form-group">
-                <label for="sold-unit-project">Project:</label>
-                <input type="text" id="sold-unit-project" name="sold-unit-project" required>
-            </div>
-            <div class="form-group">
-                <label for="sold-unit-block-lot">Block-Lot:</label>
-                <input type="text" id="sold-unit-block-lot" name="sold-unit-block-lot" required>
-            </div>
-            <div class="form-group">
-                <button type="submit">Add Sold Unit</button>
-            </div>
-        </form>
-
-        <table id="sold-units-table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Agent</th>
-                    <th>Project</th>
-                    <th>Block-Lot</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="sold-units-table-body">
-                <!-- Sold units data rows will appear here -->
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Users Tab -->
-    <div id="user-tab" class="tab-content">
-        <h3>Users</h3>
-        <table id="users-table">
-            <thead>
-                <tr>
-                    <th>Username</th>
-                    <th>Password</th>
-                    <th>Role</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="users-table-body">
-                <!-- Admin and User data will appear here -->
-            </tbody>
-        </table>
-        <form id="add-user-form">
-            <div class="form-group">
-                <label for="new-username">Username:</label>
-                <input type="text" id="new-username" required>
-            </div>
-            <div class="form-group">
-                <label for="new-password">Password:</label>
-                <input type="password" id="new-password" required>
-            </div>
-            <div class="form-group">
-                <label for="new-role">Role:</label>
-                <select id="new-role" required>
-                    <option value="admin">Admin</option>
-                    <option value="user">User</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <button type="submit">Add User</button>
-            </div>
-        </form>
-    </div>
-</div>
-
 <script>
-// Admin credentials
-const adminCredentials = { username: 'admin', password: 'DecaHomesIloiloUm6' };
-const userCredentials = { username: 'user', password: 'userpassword' };
+// Google Sheets API URL (Your provided URL)
+const API_URL = 'https://script.google.com/macros/s/AKfycbz0cm8rB7tOh_nHY7Fxje7f5paFB9pypAxiYDEWgpAEwlVvfidgZ3p0XSezGaqI1ivG/exec';
 
-// Users data (for demo)
-const users = [
-    { username: 'admin', password: 'DecaHomesIloiloUm6', role: 'admin' },
-    { username: 'user', password: 'userpassword', role: 'user' }
-];
+// Function to save project data to Google Sheets via the API
+function saveProjectData() {
+    const projectData = {
+        project: document.getElementById('project').value,
+        site: document.getElementById('site').value,
+        unitType: document.getElementById('unitType').value,
+        block: document.getElementById('block').value,
+        lot: document.getElementById('lot').value,
+        lotArea: document.getElementById('lotArea').value,
+        houseType: document.getElementById('houseType').value,
+        contractPrice: document.getElementById('contractPrice').value,
+        pc1: document.getElementById('pc1').value,
+        pc2: document.getElementById('pc2').value,
+        too: document.getElementById('too').value,
+        dp: document.getElementById('dp').value,
+        reservation: document.getElementById('reservation').value,
+        equityPromo: document.getElementById('equityPromo').value,
+        equityPayment: document.getElementById('equityPayment').value,
+        term: document.getElementById('term').value,
+        monthlyEquity: document.getElementById('monthlyEquity').value,
+        loanAmount: document.getElementById('loanAmount').value,
+        maHdmf: document.getElementById('maHdmf').value,
+        gmiHdmf: document.getElementById('gmiHdmf').value,
+        maBdo: document.getElementById('maBdo').value,
+        gmiBdo: document.getElementById('gmiBdo').value,
+        maRcBc: document.getElementById('maRcBc').value,
+        gmiRcBc: document.getElementById('gmiRcBc').value,
+        status: document.getElementById('status').value
+    };
 
-document.getElementById('login-form').addEventListener('submit', function(event) {
-    event.preventDefault();
-
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    const errorMessage = document.getElementById('login-error');
-
-    // Check user credentials
-    const user = users.find(u => u.username === username && u.password === password);
-
-    if (user) {
-        // Successful login
-        localStorage.setItem('loggedIn', 'true');
-        localStorage.setItem('userRole', user.role);
-        showMainContent(user.role);  // Pass the role to show relevant content
-    } else {
-        // Invalid login
-        errorMessage.style.display = 'block';
-    }
-});
-
-// Show main content after login
-function showMainContent(userRole) {
-    document.getElementById('login-section').style.display = 'none';
-    document.getElementById('main-content-section').style.display = 'block';
-
-    // Check the user role and display content accordingly
-    if (userRole === 'admin') {
-        // Admin can access everything, show all sections
-        document.querySelectorAll(".admin-only").forEach(el => el.classList.remove('hidden'));
-    } else if (userRole === 'user') {
-        // User can only access certain sections, hide admin-only sections
-        document.querySelectorAll(".admin-only").forEach(el => el.classList.add('hidden'));
-    }
+    fetch(API_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify([projectData]) // Send data as JSON
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data === 'Success') {
+            document.getElementById('success-message').style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
+            clearForm();
+        } else {
+            document.getElementById('error-message').style.display = 'block';
+        }
+    })
+    .catch(error => {
+        document.getElementById('error-message').style.display = 'block';
+    });
 }
 
-// Switch tabs based on role
-function switchTab(tabId) {
-    const userRole = localStorage.getItem('userRole');
-    
-    // Ensure users can't access Admin-only tabs (like User Management, Inventory Settings)
-    if (userRole === 'user' && (tabId === 'user-tab' || tabId === 'inventory-tab')) {
-        alert("You do not have permission to access this section.");
-        return;
-    }
-
-    document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
-    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
-
-    document.getElementById(tabId).classList.add("active");
-    document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add("active");
-}
-
-// On page load, check if the user is logged in
-if (localStorage.getItem('loggedIn') === 'true') {
-    const userRole = localStorage.getItem('userRole');
-    showMainContent(userRole);
+// Function to clear the form after submission
+function clearForm() {
+    document.getElementById('project-form').reset();
 }
 </script>
 
